@@ -11,7 +11,10 @@ use common\widgets\Alert;
 
 AppAsset::register($this);
 
-$baseUrl = "http://localhost:2525/ta_dbd/backend/web/";
+$baseUrl = Yii::$app->getUrlManager()->getBaseUrl()."/";
+
+// var_dump($baseUrl); die();
+
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
