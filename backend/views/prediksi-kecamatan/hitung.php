@@ -31,41 +31,105 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= "Error : " . $error_min . "<br>" ?> 
 
     <h3>My Google Maps Demo</h3>
-
-
+    
     <div id="map"></div>
 
-    <script>
-        var map;
-        var src = 'http://naufalpens.it.student.pens.ac.id/kml/jember.kml';
-        // var src = '127.0.0.1:2525/ta_dbd/backend/kml/jember.kml';
-        // var src = 'https://developers.google.com/maps/documentation/javascript/examples/kml/westcampus.kml';
-
-        function initMap() {
-            var centerLatLng = {lat: -8.17546958726021, lng: 113.7026596069336};
-            var map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 9,
-                center: centerLatLng
-            });
-
-            var kmlLayer = new google.maps.KmlLayer(src, {            
-                suppressInfoWindows: true,
-                preserveViewport: false,
-                map: map
-            });
-
-//        var marker = new google.maps.Marker({
-//          position: uluru,
-//          map: map
+<!--    <table style="margin-left:12px;">
+        <tr>
+            <td style="padding: 3px;">
+                <svg width="50px" height="20">
+                <rect width="100%" height="100" style="fill:rgb(255,208,176);" /> 
+                </svg>
+            </td>
+            <td style="margin-left:0px"><= 1.1034</td>
+        </tr>
+        <tr>
+            <td style="padding: 3px;">
+                <svg width="50px" height="20">
+                <rect width="100%" height="100" style="fill:rgb(255,169,150);" /> 
+                </svg>
+            </td>
+            <td>> 1.1034 and <= 1.4412</td>
+        </tr>
+        <tr>
+            <td style="padding: 3px;">
+                <svg width="50px" height="20">
+                <rect width="100%" height="100" style="fill:rgb(230,133,124);" /> 
+                </svg>
+            </td>
+            <td>> 1.4412 and <= 1.6276</td>
+        </tr>
+        <tr>
+            <td style="padding: 3px;">
+                <svg width="50px" height="20">
+                <rect width="100%" height="100" style="fill:rgb(209,98,109);" /> 
+                </svg>
+            </td>
+            <td>> 1.6276 and <= 2.0884</td>
+        </tr>
+        <tr>
+            <td style="padding: 3px;">
+                <svg width="50px" height="20">
+                <rect width="100%" height="100" style="fill:rgb(181,75,99);" /> 
+                </svg>
+            </td>
+            <td>> 2.0884 and <= 11.0406</td>
+        </tr>
+    </table>-->
+    
+    <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBCowEtFYcc6rnuHniA4_t883RgxdRBm-I"></script>
+    <script type="text/javascript" src="localhost:2525/ta_dbd/backend/web/asset/geoxml3/kmz/geoxml3.js"></script>
+    <script>       
+        var surabaya = new google.maps.LatLng(-8.17546958726021, 113.7026596069336);
+        var petaoption = {zoom: 9, center: surabaya, mapTypeId: google.maps.MapTypeId.ROADMAP};
+        peta = new google.maps.Map(document.getElementById("map"), petaoption);
+        
+        var geoXml = new geoXML3.parser({map: peta});
+        var path = "localhost:2525/ta_dbd/backend/kml/jember.kml";
+        geoXml.parse(path);
+        
+//        document.addEventListener("DOMContentLoaded", function(event) { 
+//            event.preventDefault();
+////            $('#map').html('');
+////            document.getElementById('judul').innerHTML = 'Peta Crime Rate';
+//            var jember = new google.maps.LatLng(-8.17546958726021, 113.7026596069336);
+//            var petaoption = {zoom: 9, center: jember, mapTypeId: google.maps.MapTypeId.ROADMAP};
+//            peta = new google.maps.Map(document.getElementById("map"), petaoption);
+//            var geoXml = new geoXML3.parser({map: peta});
+//
+////            var startPath = "kml/cr_";
+////            var middlePath = "_";
+////            var endPath = ".kml";
+//            var path = "C:/xampp/htdocs/ta_dbd/backend/kml/jember.kml";
+//            geoXml.parse(path);
+////            console.log(path);
+////            google.maps.event.addListener(peta, 'click', function (event) {
+////                kasihtanda(event.latLng);
+////            });
+//        });        
+        
+//        $(document).ready(function(){
+//            event.preventDefault();
+//            $('#map').html('');
+////            document.getElementById('judul').innerHTML = 'Peta Crime Rate';
+//            var surabaya = new google.maps.LatLng(-7.273069, 112.754513);
+//            var petaoption = {zoom: 15, center: surabaya, mapTypeId: google.maps.MapTypeId.ROADMAP};
+//            peta = new google.maps.Map(document.getElementById("map"), petaoption);
+//            var geoXml = new geoXML3.parser({map: peta});
+//
+////            var startPath = "kml/cr_";
+////            var middlePath = "_";
+////            var endPath = ".kml";
+//            var path = "localhost:2525/ta_dbd/backend/kml/surabaya_2_2016.kml";
+//            geoXml.parse(path);
+////            console.log(path);
+////            google.maps.event.addListener(peta, 'click', function (event) {
+////                kasihtanda(event.latLng);
+////            });
 //        });
 
-//        google.maps.event.addListener(map,'click',function(e){            
-//            console.log("lat : "+e.latLng.lat()+" = lng : "+e.latLng.lng());
-//        });        
-
-        }
     </script>
 
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBG7PYXZXcFKSgGHW7LS6leKP25OyZE04M&callback=initMap"></script>
+    <!--<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBG7PYXZXcFKSgGHW7LS6leKP25OyZE04M&callback=initMap"></script>-->
 
 </div>

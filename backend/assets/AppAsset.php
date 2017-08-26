@@ -48,6 +48,7 @@ class AppAsset extends AssetBundle
         'asset/dist/js/demo.js',
         'asset/plugins/datatables/jquery.dataTables.min.js',
         'asset/plugins/datatables/dataTables.bootstrap.min.js',
+//        'asset/geoxml3/kmz/geoxml3.js',
     ];
     public $depends = [
         'yii\web\YiiAsset',

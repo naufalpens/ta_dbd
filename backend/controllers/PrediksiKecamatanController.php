@@ -159,7 +159,7 @@ class PrediksiKecamatanController extends Controller
         $K = $error_min * 10;
         $T = 0.8;
         
-        for ($iterasi = 0; $iterasi < 1000; $iterasi++){
+        for ($iterasi = 0; $iterasi < 50; $iterasi++){
             //Acak Solusi
             for ($i = 0; $i < 4; $i++) {
                 $random = (float)rand()/(float)getrandmax();
