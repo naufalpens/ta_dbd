@@ -78,14 +78,14 @@ $this->params['breadcrumbs'][] = $this->title;
     </table>-->
     
     <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBCowEtFYcc6rnuHniA4_t883RgxdRBm-I"></script>
-    <script type="text/javascript" src="localhost:2525/ta_dbd/backend/web/asset/geoxml3/kmz/geoxml3.js"></script>
+    <script type="text/javascript" src="../../web/asset/geoxml3/polys/geoxml3.js"></script>
     <script>       
-        var surabaya = new google.maps.LatLng(-8.17546958726021, 113.7026596069336);
-        var petaoption = {zoom: 9, center: surabaya, mapTypeId: google.maps.MapTypeId.ROADMAP};
+        var jember = new google.maps.LatLng(-8.17546958726021, 113.7026596069336);
+        var petaoption = {zoom: 9, center: jember, mapTypeId: google.maps.MapTypeId.ROADMAP};
         peta = new google.maps.Map(document.getElementById("map"), petaoption);
         
         var geoXml = new geoXML3.parser({map: peta});
-        var path = "localhost:2525/ta_dbd/backend/kml/jember.kml";
+        var path = "../../kml/jember.kml";
         geoXml.parse(path);
         
 //        document.addEventListener("DOMContentLoaded", function(event) { 
