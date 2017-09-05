@@ -23,6 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?= "Kasus : " . $kasus . "<br>" ?>
     <?= "Prediksi : " . $prediksi_min . "<br>" ?>
+    <?= "T Akhir : " . $t_akhir . "<br>" ?>
     <?php
     foreach ($solusi_min as $key => $value) {
         echo "Solusi" . $key . " : " . $value . "<br>";

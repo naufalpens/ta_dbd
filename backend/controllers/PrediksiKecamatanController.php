@@ -132,8 +132,23 @@ class PrediksiKecamatanController extends Controller
         $dbd = DbdNormal::findBySql("
             SELECT *
             FROM dbd_normal
-            
+            WHERE tanggal NOT LIKE '%2012-%' 
         ")->all();
+        
+        $dbd_prediksi = DbdNormal::findBySql("
+            SELECT *
+            FROM dbd_normal
+            WHERE tanggal LIKE '%2012-%'
+        ")->all();
+        
+        $total_dbd_prediksi = DbdNormal::findBySql("
+            SELECT SUM(kasus)
+            FROM dbd_normal
+            WHERE tanggal LIKE '%2012-%'
+        ")->all();
+        
+//        var_dump($total_dbd_prediksi); die();
+//        var_dump(sizeof($dbd), sizeof($dbd_prediksi)); die();
          
         //Acak Solusi
         for ($i = 0; $i < 4; $i++) {
@@ -178,28 +193,45 @@ class PrediksiKecamatanController extends Controller
                         ($solusi[2] * $dbd[$k]->abj) + 
                         ($solusi[3] * $dbd[$k]->hi);                
             }
-            $error = pow($total_kasus - $prediksi, 2);
+            $error = sqrt((pow($total_kasus - $prediksi, 2))/sizeof($dbd));
 
             //Pengubahan Smin dan Emin
             $r = (float)rand()/(float)getrandmax();
-            $exp = exp((-1 * ($error - $error_min)/($K * $T)));
+            $exp = exp( -($error - $error_min)/($K * $T));
+            
+            
+            
 //            var_dump(M_PI); die();
-            if($r < $exp){
-//            if($error_min > $error){
+//            if($r < $exp){
+            if($error_min > $error){
                 $solusi_min = $solusi;
                 $error_min = $error;
                 $prediksi_min = $prediksi;
             }                       
             
             //Pengubahan Temperature
-            $coolingRate = 0.003;
+            $coolingRate = 0.12;
             $T = $T * (1 - $coolingRate);
+        
+            //coba doang
+            $params['kasus'] = $total_kasus;
+            $params['solusi_min'] = $solusi_min;
+            $params['prediksi_min'] = $prediksi_min;
+            $params['t_akhir'] = $T;
+            $params['error_min'] = $error_min;
+            
+            echo $iterasi+1 . ". Prediksi : " . $params['prediksi_min'] . " - - - ";
+            echo "Kasus : " . $params['kasus'] . " - - - ";
+            echo "Error : " . $params['error_min'] . "<br>";
         }
+//        echo $params['prediksi_min']."<br>";
+        die();
 
-        $params['kasus'] = $total_kasus;
-        $params['error_min'] = $error_min;
-        $params['solusi_min'] = $solusi_min;
-        $params['prediksi_min'] = $prediksi_min;
+//        $params['kasus'] = $total_kasus;
+//        $params['error_min'] = $error_min;
+//        $params['solusi_min'] = $solusi_min;
+//        $params['prediksi_min'] = $prediksi_min;
+//        $params['t_akhir'] = $T;
         
 //        return $this->render('hitung', ['error_min' => $error_min, 'solusi_min' => $solusi_min]);
         return $this->render('hitung', $params);
