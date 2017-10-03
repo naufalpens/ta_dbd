@@ -135,17 +135,17 @@ class PrediksiKecamatanController extends Controller
             WHERE tanggal NOT LIKE '%2012-%' 
         ")->all();
         
-        $dbd_prediksi = DbdNormal::findBySql("
-            SELECT *
-            FROM dbd_normal
-            WHERE tanggal LIKE '%2012-%'
-        ")->all();
-        
-        $total_dbd_prediksi = DbdNormal::findBySql("
-            SELECT SUM(kasus)
-            FROM dbd_normal
-            WHERE tanggal LIKE '%2012-%'
-        ")->all();
+//        $dbd_prediksi = DbdNormal::findBySql("
+//            SELECT *
+//            FROM dbd_normal
+//            WHERE tanggal LIKE '%2012-%'
+//        ")->all();
+//        
+//        $total_dbd_prediksi = DbdNormal::findBySql("
+//            SELECT SUM(kasus)
+//            FROM dbd_normal
+//            WHERE tanggal LIKE '%2012-%'
+//        ")->all();
         
 //        var_dump($total_dbd_prediksi); die();
 //        var_dump(sizeof($dbd), sizeof($dbd_prediksi)); die();
@@ -193,7 +193,7 @@ class PrediksiKecamatanController extends Controller
             $coolingRate = 0.12;
             $T = $T * (1 - $coolingRate);
         
-            //coba doang
+            //Pengisian Prams untuk ditampilkan ke View
             $params['kasus'] = $hitung['total_kasus'];
             $params['solusi_min'] = $solusi_min;
             if(isset($prediksi_min)){
