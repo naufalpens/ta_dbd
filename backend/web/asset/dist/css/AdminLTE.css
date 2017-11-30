@@ -101,7 +101,7 @@ body {
 }
 .main-footer {
   background: #fff;
-  padding: 15px;
+  padding: 15px 40px;
   color: #444;
   border-top: 1px solid #d2d6de;
 }
@@ -144,11 +144,11 @@ body.hold-transition .main-header .logo {
 /* Content */
 .content {
   min-height: 250px;
-  padding: 15px;
+  padding: 15px 40px;
   margin-right: auto;
   margin-left: auto;
-  padding-left: 15px;
-  padding-right: 15px;
+/*  padding-left: 15px;
+  padding-right: 15px;*/
 }
 /* H1 - H6 font */
 h1,
