@@ -9,6 +9,7 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use backend\models\DbdNormal;
+use backend\models\Kecamatan;
 
 /**
  * PrediksiKecamatanController implements the CRUD actions for PrediksiKecamatan model.
@@ -124,6 +125,9 @@ class PrediksiKecamatanController extends Controller
     }
     
     public function actionHitungLinear() {
+//        $tes = createKML();
+//        die();
+
         $x=1;
         ini_set('max_execution_time', 30000);
         $time_start = microtime(true);
@@ -198,8 +202,8 @@ class PrediksiKecamatanController extends Controller
             //Prediksi
             $exp2 = exp( -($error2 - $error_min2)/($K2 * $T));
             
-            //if($r < $exp2){ //Simulated Annealing
-            if($error_min2 > $error2){ //Montecarlo                
+            //if($r < $exp){ //Simulated Annealing
+            if($error_min > $error){ //Montecarlo
                 $solusi_min = $solusi;
                 $error_min = $error;
                 $prediksi_min = $prediksi;
@@ -319,4 +323,106 @@ function average($data){
     }
     $average = $average / sizeof($data);
     return $average;
+}
+
+function createKML(){
+    $kml = '<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://code.google.com/apis/kml/schema/kml22gx.xsd">
+<Document id="INDONESIA_KEC">
+<name>INDONESIA_KEC</name>
+<Snippet></Snippet>
+<Folder id="FeatureLayer0">
+<name>INDONESIA_KEC</name>
+<Snippet></Snippet>
+
+';
+    
+    $kecamatan = Kecamatan::find()->asArray()->all();
+    foreach ($kecamatan as $k => $v){
+        $kml .= '<Placemark>
+<name>'. $v['nama_kecamatan'] .'</name>
+<description>'.$v['nama_kecamatan'].'</description>
+<LookAt>
+<longitude>113.62262706</longitude>
+<latitude>-8.07996199</latitude>
+<range>27845</range>
+</LookAt>
+<styleUrl>#Line_Shape_ff0000_03</styleUrl>
+<Polygon>
+<outerBoundaryIs>
+<LinearRing>
+<coordinates>'.
+$v['koordinat']
+.'</coordinates>
+</LinearRing>
+';
+        if($v['nama_kecamatan'] == 'Gumuk Mas'){
+            $kml .= '</innerBoundaryIs>
+</Polygon>
+</Placemark>
+
+';
+        } else {
+            $kml .= '</outerBoundaryIs>
+</Polygon>
+</Placemark>
+
+';
+        }
+        
+    }
+    
+    $kml .= '</Folder>
+        
+<Style id="PolyStylesedang">
+<LabelStyle>
+<color>00000000</color>
+<scale>0.000000</scale>
+</LabelStyle>
+<LineStyle>
+<color>ff666666</color>
+<width>0.750000</width>
+</LineStyle>
+<PolyStyle>
+<color>ff9dc6fe</color>
+<outline>1</outline>
+</PolyStyle>
+</Style>
+
+<Style id="PolyStylerendah">
+<LabelStyle>
+<color>00000000</color>
+<scale>0.000000</scale>
+</LabelStyle>
+<LineStyle>
+<color>ff666666</color>
+<width>0.750000</width>
+</LineStyle>
+<PolyStyle>
+<color>ffe4f1fd</color>
+<outline>1</outline>
+</PolyStyle>
+</Style>
+
+<Style id="PolyStyletinggi">
+<LabelStyle>
+<color>00000000</color>
+<scale>0.000000</scale>
+</LabelStyle>
+<LineStyle>
+<color>ff666666</color>
+<width>0.750000</width>
+</LineStyle>
+<PolyStyle>
+<color>ff7991c5</color>
+<outline>1</outline>
+</PolyStyle>
+</Style>
+
+</Document>
+</kml>';
+    
+    file_put_contents("../kml/test.kml",$kml);
+    die();
 }

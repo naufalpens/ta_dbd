@@ -62,7 +62,7 @@ $this->params['breadcrumbs'][] = $this->title;
         peta = new google.maps.Map(document.getElementById("map"), petaoption);
 
         var geoXml = new geoXML3.parser({map: peta});
-        var path = "../../kml/jember.kml";
+        var path = "../../kml/test.kml";
         geoXml.parse(path);
         
         var js_array = <?php echo $dataChart ?>;
