@@ -21,26 +21,77 @@ $this->params['breadcrumbs'][] = $this->title;
         <?= Html::a('Hitung Kuadratik', ['hitung-kuadratik'], ['class' => 'btn btn-warning']) ?>
     </p>
 
-    <?= "Kasus : " . $kasus . "<br>" ?>
-    <?= "Prediksi : " . $prediksi_min . "<br>" ?>
-    <?= "T Akhir : " . $t_akhir . "<br>" ?>
+    
+    <?= "Kasus : " . $params['kasus'] . "<br>" ?>
+    <?= "Prediksi : " . $params['prediksi_min'] . "<br>" ?>
+    <?= "Error : " . abs($params['kasus'] - $params['prediksi_min']) . "<br>" ?>
+    <?= "T Akhir : " . $params['t_akhir'] . "<br>" ?>
+    
+    <hr>
+    
+    <?= "Kasus : " . $params['kasus'] . "<br>" ?>
+    <?= "Prediksi : " . $params['grandtotal_prediksi'] . "<br>" ?>
+    <?= "Error : " . $params['grandtotal_error'] . "<br>" ?>    
+    
+    <hr>
+    
     <?php
-    foreach ($solusi_min as $key => $value) {
+    foreach ($params['solusi_min'] as $key => $value) {
         echo "Solusi" . $key . " : " . $value . "<br>";
     }
+    ?>
+
+    <div class="col-md-12" style="margin-top: 30px;">
+        <table class="table table-bordered">
+            <thead>
+                <th style="text-align: center;">CH</th>
+                <th style="text-align: center;">HH</th>
+                <th style="text-align: center;">ABJ</th>
+                <th style="text-align: center;">HI</th>
+                <th style="text-align: center;">KASUS</th>
+                <th style="text-align: center;">PREDIKSI</th>
+                <th style="text-align: center;">ERROR</th>
+            </thead>
+                <?php
+                    // var_dump($params['table']); die();
+                    
+                    for ($i=0; $i < sizeof($params['table']['ch']); $i++) {
+                ?>
+                        <tr>
+                <?php
+                        echo "<td style='text-align: center;'>" . $params['table']['ch'][$i] . "</td>";
+                        echo "<td style='text-align: center;'>" . $params['table']['hh'][$i] . "</td>";
+                        echo "<td style='text-align: center;'>" . $params['table']['abj'][$i] . "</td>";
+                        echo "<td style='text-align: center;'>" . $params['table']['hi'][$i] . "</td>";
+                        echo "<td style='text-align: center;'>" . $params['table']['kasus_tiap_data'][$i] . "</td>";
+                        echo "<td style='text-align: center;'>" . $params['table']['prediksi_tiap_data'][$i] . "</td>";
+                        echo "<td style='text-align: center;'>" . $params['table']['error_tiap_data'][$i] . "</td>";
+                ?>
+                        </tr>
+                <?php
+                    }
+                ?>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    
+
+    
+    <?php
+//    var_dump($params['error_min']); die();
     
     $dataChart = '[';
-    foreach ($error_min as $key => $value) {
-//        echo "Error" . $key . " : " . $value . "<br>";
+    foreach ($params['error_min'] as $key => $value) {
         $dataChart .= '{y:'.$key.', item1:'.$value.'},';
     }
     
-//    echo $error_min[sizeof($error_min)];
     
     $dataChart .= ']';
     ?>
-    <?php //echo "Error : " . $error_min . "<br>" ?> 
 
+    
     <h3>My Google Maps Demo</h3>
     <div id="map"></div>
 
@@ -48,13 +99,14 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="box-body chart-responsive">
         <div class="chart" id="line-chart" style="height: 300px;"></div>
     </div>
-
+        
     <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBCowEtFYcc6rnuHniA4_t883RgxdRBm-I"></script>
     <script type="text/javascript" src="../../web/asset/geoxml3/polys/geoxml3.js"></script>
     
     <script type="text/javascript" src="../../web/asset/plugins/jQuery/jquery-2.2.3.min.js"></script>        
     <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.0/raphael-min.js"></script>
     <script type="text/javascript" src="../../web/asset/plugins/morris/morris.min.js"></script>        
+    
     
     <script>
         var jember = new google.maps.LatLng(-8.17546958726021, 113.7026596069336);

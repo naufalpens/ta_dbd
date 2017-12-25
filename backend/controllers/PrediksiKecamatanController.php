@@ -9,7 +9,10 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use backend\models\DbdNormal;
+use backend\models\Dbd;
 use backend\models\Kecamatan;
+
+use backend\components\Helper;
 
 /**
  * PrediksiKecamatanController implements the CRUD actions for PrediksiKecamatan model.
@@ -147,17 +150,21 @@ class PrediksiKecamatanController extends Controller
         ")->all();
         
         //Acak Solusi
-        //$solusi = acakSolusi(5);
-        //$solusi = randomDistribusiNormal(5);
-        $solusi = randomRatarataNol(5);
+        // $solusi = acakSolusi(5);
+        $solusi = randomDistribusiNormal(5);
+        // $solusi = randomRatarataNol(5);
         
         //Hitung Error        
         $hitung = hitungError($solusi, $dbd);
-        $error = $hitung['error'];
+        $error_tiap_data = $hitung['error_tiap_data'];
+        $error = $hitung['rata_error'];
+
+        // Helper::vdump($error); die();
         
         //Prediksi
         $hitung2 = hitungError($solusi, $dbd2);
-        $error2 = $hitung2['error'];        
+        $error_tiap_data2 = $hitung2['error_tiap_data'];
+        $error2 = $hitung2['rata_error'];
         
         //Penetapan Smin dan Emin
         $solusi_min = $solusi;
@@ -168,32 +175,34 @@ class PrediksiKecamatanController extends Controller
         
         //Inisialisasi K dan T
         $K = $error_min * 10;
-        $T = 0.8;
+        //$T = 0.8;
+        $T = 0.1; $T0 = 0.1; $Tn = 0.0001;
         
         //Prediksi
         $K2 = $error_min2 * 10;
         
         //prediksi min
-        $prediksi_min = $hitung['prediksi'];
+        $prediksi_min = $hitung['rata_prediksi'];
         
         //Prediksi
-        $prediksi_min2 = $hitung2['prediksi'];
+        $prediksi_min2 = $hitung2['rata_prediksi'];
         
-        for ($iterasi = 0; $iterasi < 10000; $iterasi++){
+        $max_iterasi = 10000;
+        for ($iterasi = 0; $iterasi < $max_iterasi; $iterasi++){
             //Acak Solusi
-            //$solusi = acakSolusi(5);
-            //$solusi = randomDistribusiNormal(5);
-            $solusi = randomRatarataNol(5);
+            // $solusi = acakSolusi(5);
+            $solusi = randomDistribusiNormal(5);
+            // $solusi = randomRatarataNol(5);
 
             //Hitung Error
             $hitung = hitungError($solusi, $dbd);
-            $error = $hitung['error'];
-            $prediksi = $hitung['prediksi'];
-            
+            $error = $hitung['rata_error'];
+            $prediksi = $hitung['rata_prediksi'];
+
             //Prediksi
             $hitung2 = hitungError($solusi, $dbd2);
-            $error2 = $hitung2['error'];
-            $prediksi2 = $hitung2['prediksi'];
+            $error2 = $hitung2['rata_error'];
+            $prediksi2 = $hitung2['rata_prediksi'];
 
             //Pengubahan Smin dan Emin
             $r = (float)rand()/(float)getrandmax();
@@ -202,24 +211,25 @@ class PrediksiKecamatanController extends Controller
             //Prediksi
             $exp2 = exp( -($error2 - $error_min2)/($K2 * $T));
             
-            //if($r < $exp){ //Simulated Annealing
-            if($error_min > $error){ //Montecarlo
+            if($r < $exp){ //Simulated Annealing
+            // if($error_min > $error){ //Montecarlo
                 $solusi_min = $solusi;
                 $error_min = $error;
                 $prediksi_min = $prediksi;
                 
                 $error_min2 = $error2;
                 $prediksi_min2 = $prediksi2;
-                //echo $x++ . "<br>";
             }
             
             //Pengubahan Temperature
             $coolingRate = 0.2;
-            $T = $T * (1 - $coolingRate);
+            // $T = $T * (1 - $coolingRate);
+            $T = $T0 * pow($Tn/$T0, $iterasi/$max_iterasi);
 
             //Pengisian Params untuk ditampilkan ke View
+            $params['kasus'] = $hitung2['grandtotal_kasus'];
             $params['solusi_min'] = $solusi_min;
-            $params['kasus'] = $hitung2['total_kasus'];
+            $params['error'] = $error_min2;
             if(isset($prediksi_min2)){
                 $params['prediksi_min'] = abs($prediksi_min2);
             } else{
@@ -230,16 +240,32 @@ class PrediksiKecamatanController extends Controller
             if($iterasi%100 == 0){
                 $params['error_min'][] = $error_min2;
             }
+            $params['table']['ch'] = $hitung2['ch'];
+            $params['table']['hh'] = $hitung2['hh'];
+            $params['table']['abj'] = $hitung2['abj'];
+            $params['table']['hi'] = $hitung2['hi'];
+            $params['table']['kasus_tiap_data'] = $hitung2['kasus'];
+            $params['table']['prediksi_tiap_data'] = $hitung2['prediksi_tiap_data'];
+            $params['table']['error_tiap_data'] = $hitung2['error_tiap_data'];
         }
+        $hitung2 = hitungError($solusi_min, $dbd2);
+        $params['table']['kasus_tiap_data'] = $hitung2['kasus'];
+        $params['table']['prediksi_tiap_data'] = $hitung2['prediksi_tiap_data'];
+        $params['table']['error_tiap_data'] = $hitung2['error_tiap_data'];
+        $params['table']['rata_error'] = $hitung2['rata_error'];
+        $params['table']['rata_prediksi'] = $hitung2['rata_prediksi'];
+        $params['grandtotal_prediksi'] = $hitung2['grandtotal_prediksi'];
+        $params['grandtotal_error'] = $hitung2['grandtotal_prediksi'];
         
         $time_end = microtime(true);
         $time = $time_end - $time_start;
         
-        return $this->render('hitung', $params);
+        return $this->render('hitung', ['params' => $params]);
     }
 }
 
 function randomRatarataNol($banyak){
+    srand(mktime());
     $average = 0;
     $solusi = [];
     $skala = 1;
@@ -249,23 +275,20 @@ function randomRatarataNol($banyak){
     while($ulang){
         for ($i = 0; $i < $banyak; $i++) {
             $random = ((float)rand()/(float)getrandmax() * ($skala * 2)) - $skala;
-            $solusi[$i] = number_format($random, 2);
-        }            
+            $solusi[$i] = number_format($random, 3);
+        }
         $average = average($solusi);
-        //var_dump($average);
 
-        if($average < 0.5 && $average > -0.5){
-//            echo $average;
+        if($average < 0.3 && $average > -0.3){
             $ulang = false;
         }        
     }
 
     return $solusi;
-    //var_dump($solusi);
-    //var_dump($average);
 }
 
 function randomDistribusiNormal($banyak){
+    srand(mktime());
     $bilAcak = [];
     
     $a; $sw; $b=0; $c;
@@ -282,36 +305,52 @@ function randomDistribusiNormal($banyak){
             }
         }
 
-        $bilAcak[$i] = $b;
-        //echo $i . " => " . $b . "<br>";
+        $bilAcak[$i] = number_format($b, 3);
     }
+    
     return $bilAcak;
 }
 
 function acakSolusi ($banyak){
+    srand(mktime());
     for ($i = 0; $i < $banyak; $i++) {
         $random = ((float)rand()/(float)getrandmax() * 20) - 10;
-        $solusi[$i] = number_format($random, 2);
+        $solusi[$i] = number_format($random, 3);
     }
 //    $solusi = [0,0,0,0,0];
     return $solusi;
 }
 
-function hitungError($solusi, $dbd){
-    $prediksi = 0;
+function hitungError($solusi, $dbd){    
     $total_kasus = 0;
     $error = 0;
+    $hitungError['grandtotal_prediksi'] = 0;
+    $hitungError['grandtotal_error'] = 0;
     
     foreach ($dbd as $k => $v) {
         $total_kasus += $dbd[$k]->kasus;
-        //$prediksi += ($solusi[0] * $dbd[$k]->ch) + ($solusi[1] * $dbd[$k]->hh) + ($solusi[2] * $dbd[$k]->abj) + ($solusi[3] * $dbd[$k]->hi) + ($solusi[4]);
-        $prediksi += ($solusi[0] * $dbd[$k]->ch) + ($solusi[1] * $dbd[$k]->hh) + ($solusi[2] * $dbd[$k]->abj) + ($solusi[3] * $dbd[$k]->hi);
+        $prediksi = ($solusi[0] * $dbd[$k]->ch) + ($solusi[1] * $dbd[$k]->hh) + ($solusi[2] * $dbd[$k]->abj) + ($solusi[3] * $dbd[$k]->hi) + ($solusi[4]);
+        
+        $pre[] = $prediksi;
+        $error = abs($dbd[$k]->kasus - $prediksi);
+        $error_prediksi[] = $error;
+        
+        $hitungError['ch'][] = $dbd[$k]->ch;
+        $hitungError['hh'][] = $dbd[$k]->hh;
+        $hitungError['abj'][] = $dbd[$k]->abj;
+        $hitungError['hi'][] = $dbd[$k]->hi;
+        $hitungError['kasus'][] = $dbd[$k]->kasus;
+        $hitungError['grandtotal_prediksi'] += $prediksi;
+        $hitungError['grandtotal_error'] += $error;
+        $hitungError['error_tiap_data'][] = number_format(abs($dbd[$k]->kasus - $prediksi), 2);
+        $hitungError['prediksi_tiap_data'][] = number_format($prediksi, 2);
     }
-    $error = sqrt((pow($total_kasus - $prediksi, 2))/sizeof($dbd));
-    
-    $hitungError['error'] = $error;
-    $hitungError['prediksi'] = $prediksi;
-    $hitungError['total_kasus'] = $total_kasus;
+
+    $hitungError['rata_prediksi'] = number_format(average($pre), 2);
+    $hitungError['rata_error'] = number_format(average($error_prediksi), 2);
+    $hitungError['grandtotal_kasus'] = $total_kasus;
+//    $hitungError['grandtotal_prediksi'] = number_format(sum($hitungError['prediksi_tiap_data']), 2);
+//    $hitungError['grandtotal_error'] = number_format(sum($hitungError['error_tiap_data']), 2);
 
     return $hitungError;
 }
@@ -323,6 +362,14 @@ function average($data){
     }
     $average = $average / sizeof($data);
     return $average;
+}
+
+function sum($data){
+    $sum = 0;
+    foreach ($data as $v) {
+        $sum += $v;
+    }
+    return $sum;
 }
 
 function createKML(){
