@@ -4,11 +4,11 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model backend\models\Dbd */
+/* @var $model backend\models\DbdFix */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
-<div class="dbd-form">
+<div class="dbd-fix-form">
 
     <?php $form = ActiveForm::begin(); ?>
 

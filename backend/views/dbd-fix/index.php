@@ -4,19 +4,19 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel backend\models\DbdNormalSearch */
+/* @var $searchModel backend\models\DbdFixSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Data Demam Berdarah Tahun 2009 - 2012 (Normalisasi)';
+$this->title = 'Data Demam Berdarah Tahun 2009 - 2012';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="dbd-normal-index">
+<div class="dbd-fix-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Dbd Normal', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Create Dbd Fix', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,

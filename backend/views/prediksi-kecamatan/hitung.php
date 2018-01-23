@@ -24,14 +24,8 @@ $this->params['breadcrumbs'][] = $this->title;
     
     <?= "Kasus : " . $params['kasus'] . "<br>" ?>
     <?= "Prediksi : " . $params['prediksi_min'] . "<br>" ?>
-    <?= "Error : " . abs($params['kasus'] - $params['prediksi_min']) . "<br>" ?>
+    <?= "Error : " . number_format(abs($params['kasus'] - $params['prediksi_min']), 2) . "<br>" ?>
     <?= "T Akhir : " . $params['t_akhir'] . "<br>" ?>
-    
-    <hr>
-    
-    <?= "Kasus : " . $params['kasus'] . "<br>" ?>
-    <?= "Prediksi : " . $params['grandtotal_prediksi'] . "<br>" ?>
-    <?= "Error : " . $params['grandtotal_error'] . "<br>" ?>    
     
     <hr>
     

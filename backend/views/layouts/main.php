@@ -95,7 +95,7 @@ $baseUrl = Yii::$app->getUrlManager()->getBaseUrl()."/";
                                 </span>
                             </a>
                             <ul class="treeview-menu">                                
-                                <li><a href="<?= $baseUrl ?>dbd"><i class="fa fa-circle-o"></i> Data Asli</a></li>                                
+                                <li><a href="<?= $baseUrl ?>dbd-fix"><i class="fa fa-circle-o"></i> Data Asli</a></li>                                
                                 <li><a href="<?= $baseUrl ?>dbd-normal"><i class="fa fa-circle-o"></i> Data Normalisasi</a></li>                                
                             </ul>
                         </li>

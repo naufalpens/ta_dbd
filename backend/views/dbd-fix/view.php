@@ -4,13 +4,13 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
-/* @var $model backend\models\Dbd */
+/* @var $model backend\models\DbdFix */
 
 $this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Dbds', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => 'Dbd Fixes', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="dbd-view">
+<div class="dbd-fix-view">
 
     <h1><?= Html::encode($this->title) ?></h1>
 

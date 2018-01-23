@@ -3,16 +3,16 @@
 namespace backend\controllers;
 
 use Yii;
-use backend\models\DbdNormal;
-use backend\models\DbdNormalSearch;
+use backend\models\DbdFix;
+use backend\models\DbdFixSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
 /**
- * DbdNormalController implements the CRUD actions for DbdNormal model.
+ * DbdFixController implements the CRUD actions for DbdFix model.
  */
-class DbdNormalController extends Controller
+class DbdFixController extends Controller
 {
     /**
      * @inheritdoc
@@ -30,12 +30,12 @@ class DbdNormalController extends Controller
     }
 
     /**
-     * Lists all DbdNormal models.
+     * Lists all DbdFix models.
      * @return mixed
      */
     public function actionIndex()
     {
-        $searchModel = new DbdNormalSearch();
+        $searchModel = new DbdFixSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
         return $this->render('index', [
@@ -45,7 +45,7 @@ class DbdNormalController extends Controller
     }
 
     /**
-     * Displays a single DbdNormal model.
+     * Displays a single DbdFix model.
      * @param integer $id
      * @return mixed
      */
@@ -57,13 +57,13 @@ class DbdNormalController extends Controller
     }
 
     /**
-     * Creates a new DbdNormal model.
+     * Creates a new DbdFix model.
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new DbdNormal();
+        $model = new DbdFix();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -75,7 +75,7 @@ class DbdNormalController extends Controller
     }
 
     /**
-     * Updates an existing DbdNormal model.
+     * Updates an existing DbdFix model.
      * If update is successful, the browser will be redirected to the 'view' page.
      * @param integer $id
      * @return mixed
@@ -94,7 +94,7 @@ class DbdNormalController extends Controller
     }
 
     /**
-     * Deletes an existing DbdNormal model.
+     * Deletes an existing DbdFix model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -107,15 +107,15 @@ class DbdNormalController extends Controller
     }
 
     /**
-     * Finds the DbdNormal model based on its primary key value.
+     * Finds the DbdFix model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return DbdNormal the loaded model
+     * @return DbdFix the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = DbdNormal::findOne($id)) !== null) {
+        if (($model = DbdFix::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

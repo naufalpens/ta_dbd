@@ -17,17 +17,16 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <p>
         <?= Html::a('Create Dbd', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>        
-    
+    </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-//        'filterModel' => $searchModel,
+        'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
-//            'id',
+            'id',
             'tanggal',
-            'kecamatan',
+            'id_kecamatan',
             'ch',
             'hh',
             'abj',

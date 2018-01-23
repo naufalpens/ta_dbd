@@ -7,7 +7,7 @@ use yii\grid\GridView;
 /* @var $searchModel backend\models\PrediksiKecamatanSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Prediksi Kecamatans';
+$this->title = 'Prediksi Demam Berdarah';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="prediksi-kecamatan-index">

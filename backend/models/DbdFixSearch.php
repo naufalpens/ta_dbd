@@ -5,12 +5,12 @@ namespace backend\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use backend\models\Dbd;
+use backend\models\DbdFix;
 
 /**
- * DbdSearch represents the model behind the search form about `backend\models\Dbd`.
+ * DbdFixSearch represents the model behind the search form about `backend\models\DbdFix`.
  */
-class DbdSearch extends Dbd
+class DbdFixSearch extends DbdFix
 {
     /**
      * @inheritdoc
@@ -41,7 +41,7 @@ class DbdSearch extends Dbd
      */
     public function search($params)
     {
-        $query = Dbd::find();
+        $query = DbdFix::find();
 
         // add conditions that should always apply here
 

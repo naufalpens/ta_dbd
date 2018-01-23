@@ -5,25 +5,27 @@ namespace backend\models;
 use Yii;
 
 /**
- * This is the model class for table "dbd_normal".
+ * This is the model class for table "dbd_fix".
  *
  * @property integer $id
  * @property string $tanggal
  * @property integer $id_kecamatan
- * @property double $ch
- * @property double $hh
- * @property double $abj
- * @property double $hi
- * @property double $kasus
+ * @property integer $ch
+ * @property integer $hh
+ * @property integer $abj
+ * @property integer $hi
+ * @property integer $kasus
+ *
+ * @property Kecamatan $idKecamatan
  */
-class DbdNormal extends \yii\db\ActiveRecord
+class DbdFix extends \yii\db\ActiveRecord
 {
     /**
      * @inheritdoc
      */
     public static function tableName()
     {
-        return 'dbd_normal';
+        return 'dbd_fix';
     }
 
     /**
@@ -34,8 +36,8 @@ class DbdNormal extends \yii\db\ActiveRecord
         return [
             [['tanggal', 'id_kecamatan', 'ch', 'hh', 'abj', 'hi', 'kasus'], 'required'],
             [['tanggal'], 'safe'],
-            [['id_kecamatan'], 'integer'],
-            [['ch', 'hh', 'abj', 'hi', 'kasus'], 'number'],
+            [['id_kecamatan', 'ch', 'hh', 'abj', 'hi', 'kasus'], 'integer'],
+            [['id_kecamatan'], 'exist', 'skipOnError' => true, 'targetClass' => Kecamatan::className(), 'targetAttribute' => ['id_kecamatan' => 'id']],
         ];
     }
 
@@ -55,7 +57,7 @@ class DbdNormal extends \yii\db\ActiveRecord
             'kasus' => 'Kasus',
         ];
     }
-    
+
     /**
      * @return \yii\db\ActiveQuery
      */
