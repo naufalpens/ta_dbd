@@ -18,8 +18,8 @@ class PrediksiKecamatanSearch extends PrediksiKecamatan
     public function rules()
     {
         return [
-            [['id', 'id_kecamatan'], 'integer'],
-            [['hasil', 'status'], 'safe'],
+            [['id', 'id_kecamatan', 'kasus', 'prediksi', 'error'], 'integer'],
+            [['status'], 'safe'],
         ];
     }
 
@@ -63,8 +63,7 @@ class PrediksiKecamatanSearch extends PrediksiKecamatan
             'id_kecamatan' => $this->id_kecamatan,
         ]);
 
-        $query->andFilterWhere(['like', 'hasil', $this->hasil])
-            ->andFilterWhere(['like', 'status', $this->status]);
+        $query->andFilterWhere(['like', 'status', $this->status]);
 
         return $dataProvider;
     }

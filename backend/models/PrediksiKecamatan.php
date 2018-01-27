@@ -9,7 +9,9 @@ use Yii;
  *
  * @property integer $id
  * @property integer $id_kecamatan
- * @property string $hasil
+ * @property integer $kasus
+ * @property integer $prediksi
+ * @property integer $error
  * @property string $status
  */
 class PrediksiKecamatan extends \yii\db\ActiveRecord
@@ -28,9 +30,8 @@ class PrediksiKecamatan extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['id_kecamatan', 'hasil', 'status'], 'required'],
-            [['id_kecamatan'], 'integer'],
-            [['hasil'], 'string', 'max' => 50],
+            [['id_kecamatan', 'kasus', 'prediksi', 'error', 'status'], 'required'],
+            [['id_kecamatan', 'kasus', 'prediksi', 'error'], 'integer'],
             [['status'], 'string', 'max' => 20],
         ];
     }
@@ -43,7 +44,9 @@ class PrediksiKecamatan extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'id_kecamatan' => 'Id Kecamatan',
-            'hasil' => 'Hasil',
+            'kasus' => 'Kasus',
+            'prediksi' => 'Prediksi',
+            'error' => 'Error',
             'status' => 'Status',
         ];
     }

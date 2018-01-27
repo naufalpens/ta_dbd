@@ -127,284 +127,274 @@ class PrediksiKecamatanController extends Controller
         }
     }
     
-    public function actionHitungLinear() {
+    public function actionHitungKecamatan($metodeperhitungan, $metodebilacak) {
 //        $tes = createKML();
-//        die();
-
-        $x=1;
+        
         ini_set('max_execution_time', 30000);
         $time_start = microtime(true);
         
-        $id_kecamatan = 1;
+        $kecamatan = Kecamatan::find()->all();
 
-        $dbd = DbdNormal::findBySql("
-            SELECT *
-            FROM dbd_normal
-            WHERE tanggal NOT LIKE '%2012-%' AND id_kecamatan = ". $id_kecamatan ."
-        ")->all();
-
-        $dbd2 = DbdNormal::findBySql("
-            SELECT *
-            FROM dbd_normal
-            WHERE tanggal LIKE '%2012-%' AND id_kecamatan = ". $id_kecamatan ."
-        ")->all();
-        
         //Acak Solusi
-        // $solusi = acakSolusi(5);
-        $solusi = randomDistribusiNormal(5);
-        // $solusi = randomRatarataNol(5);
-        
-        //Hitung Error        
-        $hitung = hitungError($solusi, $dbd);
-        $error_tiap_data = $hitung['error_tiap_data'];
-        $error = $hitung['rata_error'];
-        
-        //Prediksi
-        $hitung2 = hitungError($solusi, $dbd2);
-        $error_tiap_data2 = $hitung2['error_tiap_data'];
-        $error2 = $hitung2['rata_error'];
-        
+        if($metodebilacak == 'biasa'){
+            if($metodeperhitungan == 'linear'){
+                $solusi = acakSolusi(5);
+            } else {
+                $solusi = acakSolusi(8);
+            }
+        } else if($metodebilacak == 'ratanol'){
+            if($metodeperhitungan == 'linear'){
+                $solusi = randomRatarataNol(5);
+            } else {
+                $solusi = randomRatarataNol(8);
+            }
+        } else{
+            if($metodeperhitungan == 'linear'){
+                $solusi = randomDistribusiNormal(5);
+            } else {
+                $solusi = randomDistribusiNormal(8);
+            }
+        }
+
+        if($metodeperhitungan == 'linear'){
+            for($id_kecamatan = 1; $id_kecamatan <= sizeof($kecamatan); $id_kecamatan++){
+                $dbd = DbdNormal::findBySql("
+                    SELECT *
+                    FROM dbd_normal
+                    WHERE tanggal NOT LIKE '%2012-%' AND id_kecamatan = ". $id_kecamatan ."
+                ")->all();
+
+                $dbd2 = DbdNormal::findBySql("
+                    SELECT *
+                    FROM dbd_normal
+                    WHERE tanggal LIKE '%2012-%' AND id_kecamatan = ". $id_kecamatan ."
+                ")->all();
+                
+                //Hitung Error
+                $hitung = hitungLinear($solusi, $dbd);
+                $error_tiap_data = $hitung['error_tiap_data'];
+                $arr_error[] = sum($error_tiap_data) / sizeof($dbd);
+                
+                //Prediksi
+                $hitung2 = hitungLinear($solusi, $dbd2);
+                $error_tiap_data2 = $hitung2['error_tiap_data'];
+                $arr_error2[] = sum($error_tiap_data2) / sizeof($dbd2);
+            }
+            $error = sum($arr_error) / sizeof($arr_error);
+            $error2 = sum($arr_error2) / sizeof($arr_error2);
+        } else {
+            for($id_kecamatan = 1; $id_kecamatan <= sizeof($kecamatan); $id_kecamatan++){
+                $dbd = DbdNormal::findBySql("
+                    SELECT *
+                    FROM dbd_normal
+                    WHERE tanggal NOT LIKE '%2012-%' AND id_kecamatan = ". $id_kecamatan ."
+                ")->all();
+
+                $dbd2 = DbdNormal::findBySql("
+                    SELECT *
+                    FROM dbd_normal
+                    WHERE tanggal LIKE '%2012-%' AND id_kecamatan = ". $id_kecamatan ."
+                ")->all();
+                
+                //Hitung Error
+                $hitung = hitungKuadratik($solusi, $dbd);
+                $error_tiap_data = $hitung['error_tiap_data'];
+                $arr_error[] = sum($error_tiap_data) / sizeof($dbd);
+                
+                //Prediksi
+                $hitung2 = hitungKuadratik($solusi, $dbd2);
+                $error_tiap_data2 = $hitung2['error_tiap_data'];
+                $arr_error2[] = sum($error_tiap_data2) / sizeof($dbd2);
+            }
+            $error = sum($arr_error) / sizeof($arr_error);
+            $error2 = sum($arr_error2) / sizeof($arr_error2);
+        }
+
         //Penetapan Smin dan Emin
         $solusi_min = $solusi;
         $error_min = $error;
-        
+
         //Prediksi
         $error_min2 = $error2;
-        
+
         //Inisialisasi K dan T
         $K = $error_min * 10;
-        //$T = 0.8;
         $T = 0.1; $T0 = 0.1; $Tn = 0.0001;
-        
+
         //Prediksi
         $K2 = $error_min2 * 10;
-        
-        //prediksi min
-        $prediksi_min = $hitung['rata_prediksi'];
-        
-        //Prediksi
-        $prediksi_min2 = $hitung2['rata_prediksi'];
-        
-        $max_iterasi = 10000;
+
+        //menghitung rata2 prediksi min
+        $prediksi_min = sum($hitung['prediksi_tiap_data']) / sizeof($dbd);
+
+        //menghitung rata2 Prediksi
+        $prediksi_min2 = sum($hitung2['prediksi_tiap_data']) / sizeof($dbd2);
+
+        $max_iterasi = 200;
         for ($iterasi = 0; $iterasi < $max_iterasi; $iterasi++){
             //Acak Solusi
-            // $solusi = acakSolusi(5);
-            $solusi = randomDistribusiNormal(5);
-            // $solusi = randomRatarataNol(5);
+            if($metodebilacak == 'biasa'){
+                if($metodeperhitungan == 'linear'){
+                    $solusi = acakSolusi(5);
+                } else {
+                    $solusi = acakSolusi(8);
+                }
+            } else if($metodebilacak == 'ratanol'){
+                if($metodeperhitungan == 'linear'){
+                    $solusi = randomRatarataNol(5);
+                } else {
+                    $solusi = randomRatarataNol(8);
+                }
+            } else{
+                if($metodeperhitungan == 'linear'){
+                    $solusi = randomDistribusiNormal(5);
+                } else {
+                    $solusi = randomDistribusiNormal(8);
+                }
+            }
 
-            //Hitung Error
-            $hitung = hitungError($solusi, $dbd);
-            $error = $hitung['rata_error'];
-            $prediksi = $hitung['rata_prediksi'];
+            if($metodeperhitungan == 'linear'){
+                for($id_kecamatan = 1; $id_kecamatan <= sizeof($kecamatan); $id_kecamatan++){
+                    $dbd = DbdNormal::findBySql("
+                        SELECT *
+                        FROM dbd_normal
+                        WHERE tanggal NOT LIKE '%2012-%' AND id_kecamatan = ". $id_kecamatan ."
+                    ")->all();
 
-            //Prediksi
-            $hitung2 = hitungError($solusi, $dbd2);
-            $error2 = $hitung2['rata_error'];
-            $prediksi2 = $hitung2['rata_prediksi'];
+                    $dbd2 = DbdNormal::findBySql("
+                        SELECT *
+                        FROM dbd_normal
+                        WHERE tanggal LIKE '%2012-%' AND id_kecamatan = ". $id_kecamatan ."
+                    ")->all();
+
+                    //Hitung Error
+                    $hitung = hitungLinear($solusi, $dbd);
+                    $error_tiap_data = $hitung['error_tiap_data'];
+                    $arr_error[] = sum($error_tiap_data) / sizeof($dbd);
+                    $prediksi_tiap_data = $hitung['prediksi_tiap_data'];
+                    $arr_prediksi[] = sum($prediksi_tiap_data) / sizeof($dbd);
+                    $arr_kasus[] = sum($hitung['kasus']);
+
+                    //Prediksi
+                    $hitung2 = hitungLinear($solusi, $dbd2);
+                    $error_tiap_data2 = $hitung2['error_tiap_data'];
+                    $arr_error2[] = sum($error_tiap_data2) / sizeof($dbd2);
+                    $prediksi_tiap_data2 = $hitung2['prediksi_tiap_data'];
+                    $arr_prediksi2[] = sum($prediksi_tiap_data2) / sizeof($dbd2);
+                    $arr_kasus2[] = sum($hitung2['kasus']);
+                }
+                $error = sum($arr_error) / sizeof($arr_error);
+                $prediksi = sum($arr_prediksi) / sizeof($arr_prediksi);
+                $kasus = sum($arr_kasus);
+                
+                $error2 = sum($arr_error2) / sizeof($arr_error2);
+                $prediksi2 = sum($arr_prediksi2) / sizeof($arr_prediksi2);
+                $kasus2 = sum($arr_kasus2);
+            } else {
+                for($id_kecamatan = 1; $id_kecamatan <= sizeof($kecamatan); $id_kecamatan++){
+                    $dbd = DbdNormal::findBySql("
+                        SELECT *
+                        FROM dbd_normal
+                        WHERE tanggal NOT LIKE '%2012-%' AND id_kecamatan = ". $id_kecamatan ."
+                    ")->all();
+
+                    $dbd2 = DbdNormal::findBySql("
+                        SELECT *
+                        FROM dbd_normal
+                        WHERE tanggal LIKE '%2012-%' AND id_kecamatan = ". $id_kecamatan ."
+                    ")->all();
+
+                    //Hitung Error
+                    $hitung = hitungKuadratik($solusi, $dbd);
+                    $error_tiap_data = $hitung['error_tiap_data'];
+                    $arr_error[] = sum($error_tiap_data) / sizeof($dbd);
+                    $prediksi_tiap_data = $hitung['prediksi_tiap_data'];
+                    $arr_prediksi[] = sum($prediksi_tiap_data) / sizeof($dbd);
+                    $arr_kasus[] = sum($hitung['kasus']);
+
+                    //Prediksi
+                    $hitung2 = hitungKuadratik($solusi, $dbd2);
+                    $error_tiap_data2 = $hitung2['error_tiap_data'];
+                    $arr_error2[] = sum($error_tiap_data2) / sizeof($dbd2);
+                    $prediksi_tiap_data2 = $hitung2['prediksi_tiap_data'];
+                    $arr_prediksi2[] = sum($prediksi_tiap_data2) / sizeof($dbd2);
+                    $arr_kasus2[] = sum($hitung2['kasus']);
+                }
+                $error = sum($arr_error) / sizeof($arr_error);
+                $prediksi = sum($arr_prediksi) / sizeof($arr_prediksi);
+                $kasus = sum($arr_kasus);
+                
+                $error2 = sum($arr_error2) / sizeof($arr_error2);
+                $prediksi2 = sum($arr_prediksi2) / sizeof($arr_prediksi2);
+                $kasus2 = sum($arr_kasus2);
+            }
 
             //Pengubahan Smin dan Emin
             $r = (float)rand()/(float)getrandmax();
             $exp = exp( -($error - $error_min)/($K * $T));
-            
+
             //Prediksi
             $exp2 = exp( -($error2 - $error_min2)/($K2 * $T));
-            
+
             if($r < $exp){ //Simulated Annealing
-            // if($error_min > $error){ //Montecarlo
+            //if($error_min > $error){ //Montecarlo
                 $solusi_min = $solusi;
                 $error_min = $error;
                 $prediksi_min = $prediksi;
-                
+
                 $error_min2 = $error2;
                 $prediksi_min2 = $prediksi2;
             }
-            
+
             //Pengubahan Temperature
             $coolingRate = 0.2;
-            // $T = $T * (1 - $coolingRate);
             $T = $T0 * pow($Tn/$T0, $iterasi/$max_iterasi);
 
-            //Pengisian Params untuk ditampilkan ke View
-            $params['kasus'] = $hitung2['grandtotal_kasus'];
-            $params['solusi_min'] = $solusi_min;
-            $params['error'] = $error_min2;
-            if(isset($prediksi_min2)){
-                $params['prediksi_min'] = abs($prediksi_min2);
-            } else{
-                $params['prediksi_min'] = abs($prediksi2);
-                var_dump($iterasi ." : ". $prediksi2); die();
+            //Pengisian data buat grafik
+            if($iterasi%1 == 0){
+                $params['error_min'][] = abs($error_min2);
             }
-            $params['t_akhir'] = $T;
-            if($iterasi%100 == 0){
-                //ASLI
-                //$params['error_min'][] = $error_min2;
-                
-                //PALSU
-                $params['error_min'][] = abs($hitung2['grandtotal_kasus'] - $params['prediksi_min']);
-                //var_dump($params['error_min'][$iterasi]); die();
-            }
-            $params['table']['ch'] = $hitung2['ch'];
-            $params['table']['hh'] = $hitung2['hh'];
-            $params['table']['abj'] = $hitung2['abj'];
-            $params['table']['hi'] = $hitung2['hi'];
-            $params['table']['kasus_tiap_data'] = $hitung2['kasus'];
-            $params['table']['prediksi_tiap_data'] = $hitung2['prediksi_tiap_data'];
-            $params['table']['error_tiap_data'] = $hitung2['error_tiap_data'];
         }
-        $hitung2 = hitungError($solusi_min, $dbd2);
-        $params['table']['kasus_tiap_data'] = $hitung2['kasus'];
-        $params['table']['prediksi_tiap_data'] = $hitung2['prediksi_tiap_data'];
-        $params['table']['error_tiap_data'] = $hitung2['error_tiap_data'];
-        $params['table']['rata_error'] = $hitung2['rata_error'];        
-        $params['table']['rata_prediksi'] = $hitung2['rata_prediksi'];
-        $params['grandtotal_prediksi'] = $hitung2['grandtotal_prediksi'];
-        $params['grandtotal_error'] = $hitung2['grandtotal_prediksi'];
+        
+        //Pengisian parameter di VIEW nya
+        for($id_kecamatan = 1; $id_kecamatan <= sizeof($kecamatan); $id_kecamatan++){
+            $dbd2 = DbdNormal::findBySql("
+                SELECT *
+                FROM dbd_normal
+                WHERE tanggal LIKE '%2012-%' AND id_kecamatan = ". $id_kecamatan ."
+            ")->all();
+            
+            $hitung2 = hitungLinear($solusi_min, $dbd2);
+            $arr_kasus_tiap_kecamatan[] = sum($hitung2['kasus']);
+            $arr_prediksi_tiap_kecamatan[] = sum($hitung2['prediksi_tiap_data']) / sizeof($dbd2);
+            $arr_error_tiap_kecamatan[] = abs(sum($hitung2['kasus']) - (sum($hitung2['prediksi_tiap_data']) / sizeof($dbd2)));
+        }
+        Helper::vdump($solusi_min);
+        Helper::vdump($arr_kasus_tiap_kecamatan);
+        Helper::vdump($arr_prediksi_tiap_kecamatan);
+        Helper::vdump($arr_error_tiap_kecamatan);
         
         $time_end = microtime(true);
         $time = $time_end - $time_start;
+        echo $time . '<br>';
+        die("wes mandek");
         
-        return $this->render('hitung', ['params' => $params]);
+        //return $this->render('hitung', ['params' => $params]);
+        return $params;
     }
     
-    public function actionHitungKuadratik() {
-//        $tes = createKML();
-//        die();
-
-        $x=1;
-        ini_set('max_execution_time', 30000);
-        $time_start = microtime(true);
+    public function actionGetPrediksi() {
+        $jenisperhitungan = $_GET['jenisperhitungan'];
+        $metodeperhitungan = $_GET['metodeperhitungan'];
+        $metodebilacak = $_GET['metodebilacak'];
         
-        $id_kecamatan = 1;
-
-        $dbd = DbdNormal::findBySql("
-            SELECT *
-            FROM dbd_normal
-            WHERE tanggal NOT LIKE '%2012-%' AND id_kecamatan = ". $id_kecamatan ."
-        ")->all();
-
-        $dbd2 = DbdNormal::findBySql("
-            SELECT *
-            FROM dbd_normal
-            WHERE tanggal LIKE '%2012-%' AND id_kecamatan = ". $id_kecamatan ."
-        ")->all();
-        
-        //Acak Solusi
-        // $solusi = acakSolusi(8);
-        $solusi = randomDistribusiNormal(8);
-        // $solusi = randomRatarataNol(8);
-        
-        //Hitung Error        
-        $hitung = hitungErrorKuadratik($solusi, $dbd);
-        $error_tiap_data = $hitung['error_tiap_data'];
-        $error = $hitung['rata_error'];
-
-        // Helper::vdump($error); die();
-        
-        //Prediksi
-        $hitung2 = hitungErrorKuadratik($solusi, $dbd2);
-        $error_tiap_data2 = $hitung2['error_tiap_data'];
-        $error2 = $hitung2['rata_error'];
-        
-        //Penetapan Smin dan Emin
-        $solusi_min = $solusi;
-        $error_min = $error;
-        
-        //Prediksi
-        $error_min2 = $error2;
-        
-        //Inisialisasi K dan T
-        $K = $error_min * 10;
-        //$T = 0.8;
-        $T = 0.1; $T0 = 0.1; $Tn = 0.0001;
-        
-        //Prediksi
-        $K2 = $error_min2 * 10;
-        
-        //prediksi min
-        $prediksi_min = $hitung['rata_prediksi'];
-        
-        //Prediksi
-        $prediksi_min2 = $hitung2['rata_prediksi'];
-        
-        $max_iterasi = 10000;
-        for ($iterasi = 0; $iterasi < $max_iterasi; $iterasi++){
-            //Acak Solusi
-            // $solusi = acakSolusi(8);
-            $solusi = randomDistribusiNormal(8);
-            // $solusi = randomRatarataNol(8);
-
-            //Hitung Error
-            $hitung = hitungErrorKuadratik($solusi, $dbd);
-            $error = $hitung['rata_error'];
-            $prediksi = $hitung['rata_prediksi'];
-
-            //Prediksi
-            $hitung2 = hitungErrorKuadratik($solusi, $dbd2);
-            $error2 = $hitung2['rata_error'];
-            $prediksi2 = $hitung2['rata_prediksi'];
-
-            //Pengubahan Smin dan Emin
-            $r = (float)rand()/(float)getrandmax();
-            $exp = exp( -($error - $error_min)/($K * $T));
-            
-            //Prediksi
-            $exp2 = exp( -($error2 - $error_min2)/($K2 * $T));
-            
-            if($r < $exp){ //Simulated Annealing
-            // if($error_min > $error){ //Montecarlo
-                $solusi_min = $solusi;
-                $error_min = $error;
-                $prediksi_min = $prediksi;
-                
-                $error_min2 = $error2;
-                $prediksi_min2 = $prediksi2;
-            }
-            
-            //Pengubahan Temperature
-            $coolingRate = 0.2;
-            // $T = $T * (1 - $coolingRate);
-            $T = $T0 * pow($Tn/$T0, $iterasi/$max_iterasi);
-
-            //Pengisian Params untuk ditampilkan ke View
-            $params['kasus'] = $hitung2['grandtotal_kasus'];
-            $params['solusi_min'] = $solusi_min;
-            $params['error'] = $error_min2;
-            if(isset($prediksi_min2)){
-                $params['prediksi_min'] = abs($prediksi_min2);
-            } else{
-                $params['prediksi_min'] = abs($prediksi2);
-                var_dump($iterasi ." : ". $prediksi2); die();
-            }
-            $params['t_akhir'] = $T;
-            if($iterasi%100 == 0){
-                //ASLI
-                //$params['error_min'][] = $error_min2;
-                
-                //PALSU
-                $params['error_min'][] = abs($hitung2['grandtotal_kasus'] - $params['prediksi_min']);
-                //var_dump($params['error_min'][$iterasi]); die();
-            }
-            $params['table']['ch'] = $hitung2['ch'];
-            $params['table']['hh'] = $hitung2['hh'];
-            $params['table']['abj'] = $hitung2['abj'];
-            $params['table']['hi'] = $hitung2['hi'];
-            $params['table']['kasus_tiap_data'] = $hitung2['kasus'];
-            $params['table']['prediksi_tiap_data'] = $hitung2['prediksi_tiap_data'];
-            $params['table']['error_tiap_data'] = $hitung2['error_tiap_data'];
+        if($jenisperhitungan == 'kecamatan'){
+            $hitung = $this->actionHitungKecamatan($metodeperhitungan, $metodebilacak);
+            return $this->render('hitung', ['params' => $hitung]);
+        } else {
+            $hitung = $this->actionHitungKecamatan($metodeperhitungan, $metodebilacak);
+            return $this->render('hitung', ['params' => $hitung]);
         }
-        $hitung2 = hitungErrorKuadratik($solusi_min, $dbd2);
-        $params['table']['kasus_tiap_data'] = $hitung2['kasus'];
-        $params['table']['prediksi_tiap_data'] = $hitung2['prediksi_tiap_data'];
-        $params['table']['error_tiap_data'] = $hitung2['error_tiap_data'];
-        $params['table']['rata_error'] = $hitung2['rata_error'];
-        $params['table']['rata_prediksi'] = $hitung2['rata_prediksi'];
-        $params['grandtotal_prediksi'] = $hitung2['grandtotal_prediksi'];
-        $params['grandtotal_error'] = $hitung2['grandtotal_prediksi'];
-        
-        $time_end = microtime(true);
-        $time = $time_end - $time_start;
-        
-        return $this->render('hitung', ['params' => $params]);
     }
 }
 
@@ -425,13 +415,13 @@ function randomRatarataNol($banyak){
 
         if($average < 0.3 && $average > -0.3){
             $ulang = false;
-        }        
+        }
     }
 
     return $solusi;
 }
 
-function randomDistribusiNormal($banyak){
+function randomDistribusiNormal($banyak){    
     srand(mktime());
     $bilAcak = [];
     
@@ -465,7 +455,7 @@ function acakSolusi ($banyak){
     return $solusi;
 }
 
-function hitungError($solusi, $dbd){    
+function hitungLinear($solusi, $dbd){    
     $total_kasus = 0;
     $error = 0;
     $hitungError['grandtotal_prediksi'] = 0;
@@ -484,21 +474,20 @@ function hitungError($solusi, $dbd){
         $hitungError['abj'][] = $dbd[$k]->abj;
         $hitungError['hi'][] = $dbd[$k]->hi;
         $hitungError['kasus'][] = $dbd[$k]->kasus;
-        //$hitungError['error_tiap_data'][] = number_format(abs($dbd[$k]->kasus - $prediksi), 2);
         $hitungError['prediksi_tiap_data'][] = number_format($prediksi, 2);
         $hitungError['error_tiap_data'][] = number_format($error, 2);
-        $hitungError['grandtotal_prediksi'] += $prediksi;
-        $hitungError['grandtotal_error'] += $error;
+//        $hitungError['grandtotal_prediksi'] += $prediksi;
+//        $hitungError['grandtotal_error'] += $error;
     }
 
-    $hitungError['rata_prediksi'] = number_format(average($pre), 2);
-    $hitungError['rata_error'] = number_format(average($error_prediksi), 2);
-    $hitungError['grandtotal_kasus'] = $total_kasus;
+//    $hitungError['rata_prediksi'] = number_format(average($pre), 2);
+//    $hitungError['rata_error'] = number_format(average($error_prediksi), 2);
+//    $hitungError['grandtotal_kasus'] = $total_kasus;
 
     return $hitungError;
 }
 
-function hitungErrorKuadratik($solusi, $dbd){    
+function hitungKuadratik($solusi, $dbd){    
     $total_kasus = 0;
     $error = 0;
     $hitungError['grandtotal_prediksi'] = 0;
@@ -548,7 +537,7 @@ function sum($data){
     $sum = 0;
     foreach ($data as $v) {
         $sum += $v;
-    }
+    }    
     return $sum;
 }
 
