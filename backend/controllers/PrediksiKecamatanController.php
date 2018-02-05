@@ -10,8 +10,8 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use backend\models\DbdNormal;
 use backend\models\Dbd;
+use backend\models\DbdFix;
 use backend\models\Kecamatan;
-
 use backend\components\Helper;
 
 /**
@@ -126,8 +126,432 @@ class PrediksiKecamatanController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+       
+    //hitung tiap kecamatan yg asli "JANGAN DIHAPUS !!!"
+    public function actionHitungKecamatan($metodebilacak, $metodeperhitungan) {
+        $return['kecamatan'] = 'kecamatan';
+        $return['metodebilacak'] = $metodebilacak;
+        $return['metodeperhitungan'] = $metodeperhitungan;
+        
+        $kecamatan = Kecamatan::find()->asArray()->all();
+        //$x=1;
+        
+        ini_set('max_execution_time', 30000);
+        $time_start = microtime(true);
+
+        for($iteration = 0; $iteration < sizeof($kecamatan); $iteration++){
+            $dbd = DbdNormal::findBySql("
+                SELECT *
+                FROM dbd_normal
+                WHERE tanggal NOT LIKE '%2012-%' AND id_kecamatan = ". $kecamatan[$iteration]['id'] ."
+            ")->all();
+
+            $dbd2 = DbdNormal::findBySql("
+                SELECT *
+                FROM dbd_normal
+                WHERE tanggal LIKE '%2012-%' AND id_kecamatan = ". $kecamatan[$iteration]['id'] ."
+            ")->all();
+
+            //Acak Solusi
+            if($metodeperhitungan == 'linear'){
+                if($metodebilacak == 'biasa'){
+                    $solusi = acakSolusi(5);
+                } else if($metodebilacak == 'ratanol'){
+                    $solusi = randomRatarataNol(5);
+                } else {
+                    $solusi = randomDistribusiNormal(5);
+                }
+            } else {
+                if($metodebilacak == 'biasa'){
+                    $solusi = acakSolusi(8);
+                } else if($metodebilacak == 'ratanol'){
+                    $solusi = randomRatarataNol(8);
+                } else {
+                    $solusi = randomDistribusiNormal(8);
+                }
+            }
+
+            //perhitungan
+            if($metodeperhitungan == 'linear'){
+                //Hitung Error        
+                $hitung = hitungLinear($solusi, $dbd);
+                $error_tiap_data = $hitung['error_tiap_data'];
+                $error = average($error_tiap_data);
+
+                //Prediksi
+                $hitung2 = hitungLinear($solusi, $dbd2);
+                $error_tiap_data2 = $hitung2['error_tiap_data'];
+                $error2 = average($error_tiap_data2);
+            } else {
+                //Hitung Error        
+                $hitung = hitungKuadratik($solusi, $dbd);
+                $error_tiap_data = $hitung['error_tiap_data'];
+                $error = average($error_tiap_data);
+
+                //Prediksi
+                $hitung2 = hitungKuadratik($solusi, $dbd2);
+                $error_tiap_data2 = $hitung2['error_tiap_data'];
+                $error2 = average($error_tiap_data2);
+            }
+
+            //Penetapan Smin dan Emin
+            $solusi_min = $solusi;
+            $error_min = $error;
+
+            //Prediksi
+            $error_min2 = $error2;
+
+            //Inisialisasi K dan T
+            $K = $error_min * 10;
+            //$T = 0.8;
+            $T = 0.1; $T0 = 0.1; $Tn = 0.0001;
+
+            //Prediksi
+            $K2 = $error_min2 * 10;
+
+            //prediksi min
+            $prediksi_min = average($hitung['prediksi_tiap_data']);
+
+            //Prediksi
+            $prediksi_min2 = average($hitung2['prediksi_tiap_data']);
+
+            $max_iterasi = 50;
+            for ($iterasi = 0; $iterasi < $max_iterasi; $iterasi++){
+                //Acak Solusi
+                if($metodeperhitungan == 'linear'){
+                    if($metodebilacak == 'biasa'){
+                        $solusi = acakSolusi(5);
+                    } else if($metodebilacak == 'ratanol'){
+                        $solusi = randomRatarataNol(5);
+                    } else {
+                        $solusi = randomDistribusiNormal(5);
+                    }
+                } else {
+                    if($metodebilacak == 'biasa'){
+                        $solusi = acakSolusi(8);
+                    } else if($metodebilacak == 'ratanol'){
+                        $solusi = randomRatarataNol(8);
+                    } else {
+                        $solusi = randomDistribusiNormal(8);
+                    }
+                }
+
+                if($metodeperhitungan == 'linear'){
+                    //Hitung Error
+                    $hitung = hitungLinear($solusi, $dbd);
+                    $error = average($hitung['error_tiap_data']);
+                    $prediksi = average($hitung['prediksi_tiap_data']);
+
+                    //Prediksi
+                    $hitung2 = hitungLinear($solusi, $dbd2);
+                    $error2 = average($hitung2['error_tiap_data']);
+                    $prediksi2 = average($hitung2['prediksi_tiap_data']);
+                } else {
+                    //Hitung Error
+                    $hitung = hitungKuadratik($solusi, $dbd);
+                    $error = average($hitung['error_tiap_data']);
+                    $prediksi = average($hitung['prediksi_tiap_data']);
+
+                    //Prediksi
+                    $hitung2 = hitungKuadratik($solusi, $dbd2);
+                    $error2 = average($hitung2['error_tiap_data']);
+                    $prediksi2 = average($hitung2['prediksi_tiap_data']);
+                }
+
+                //Pengubahan Smin dan Emin
+                $r = (float)rand()/(float)getrandmax();
+                if($K == 0){
+                    $K = 1;
+                }
+                $exp = exp( -($error - $error_min)/($K * $T));
+
+                //Prediksi
+                if($K2 == 0){
+                    $K2 = 1;
+                }
+                $exp2 = exp( -($error2 - $error_min2)/($K2 * $T));
+
+                if($r < $exp){ //Simulated Annealing
+//                if($error_min > $error){ //Montecarlo
+                    $solusi_min = $solusi;
+                    $error_min = $error;
+                    $prediksi_min = $prediksi;
+
+                    $error_min2 = $error2;
+                    $prediksi_min2 = $prediksi2;
+                }
+
+                //Pengubahan Temperature
+                $coolingRate = 0.2;
+                // $T = $T * (1 - $coolingRate);
+                $T = $T0 * pow($Tn/$T0, $iterasi/$max_iterasi);
+
+                if(isset($prediksi_min2)){
+                    $return['prediksi_min'] = abs($prediksi_min2);
+                } else{
+                    $return['prediksi_min'] = abs($prediksi2);
+                    var_dump($iterasi ." : ". $prediksi2); die();
+                }
+                $return['t_akhir'] = $T;
+                if($iterasi%100 == 0){
+                    //ntar dibuka ya
+                    //$params['error_min'][] = abs(sum($hitung2['kasus']) - $params['prediksi_min']);
+                }
+            }
+            
+            $data = DbdFix::findBySql("
+                SELECT df.kasus as 'kasus'
+                FROM dbd_fix df
+                WHERE df.tanggal LIKE '%2012-01%' AND df.id_kecamatan = ".$kecamatan[$iteration]['id']."
+                GROUP BY id_kecamatan
+            ")->asArray()->one();
+            $hitung2 = hitungLinear($solusi_min, $dbd2);
+
+            $prediksi2 = denormalisasi($hitung2['prediksi_tiap_data']);
+//            $return[$iteration]['solusi'] = $solusi_min;
+            $avgprediksi = round(average($prediksi2));
+            $err = abs($data['kasus'] - $avgprediksi);
+            $return[$iteration]['table']['kecamatan'] = $kecamatan[$iteration]['nama_kecamatan'];
+            $return[$iteration]['table']['kasus'] = $data['kasus'];
+            $return[$iteration]['table']['prediksi'] = $avgprediksi;
+            $return[$iteration]['table']['error'] = $err;
+            
+            $kml[$iteration]['table']['kecamatan'] = $kecamatan[$iteration]['nama_kecamatan'];
+            $kml[$iteration]['table']['kasus'] = $data['kasus'];
+            $kml[$iteration]['table']['prediksi'] = $avgprediksi;
+            $kml[$iteration]['table']['error'] = $err;
+            
+            $kml_asli[$iteration]['table']['kecamatan'] = $kecamatan[$iteration]['nama_kecamatan'];
+            $kml_asli[$iteration]['table']['kasus'] = $data['kasus'];
+        }
+//        Helper::vdump($return);
+//        die("a");
+        
+        $time_end = microtime(true);
+        $time = $time_end - $time_start;
+        
+        createKMLKecamatan2($kml_asli);
+        //abc
+        createKMLKecamatan($return);
+        
+        return $return;
+    }
     
-    public function actionHitungKecamatan($metodeperhitungan, $metodebilacak) {
+    //coba hitung langsung banyak percobaan
+    public function actionHitungKecamatan2($metodebilacak, $metodeperhitungan) {
+        $return['kecamatan'] = 'kecamatan';
+        $return['metodebilacak'] = $metodebilacak;
+        $return['metodeperhitungan'] = $metodeperhitungan;
+        
+        $i=1;
+        
+        $kecamatan = Kecamatan::find()->asArray()->all();
+        //$x=1;
+        
+        ini_set('max_execution_time', 3000000);
+        $time_start = microtime(true);
+
+        for($iteration = 0; $iteration < sizeof($kecamatan); $iteration++){
+            for($ulang=0; $ulang<10; $ulang++){
+                $dbd = DbdNormal::findBySql("
+                    SELECT *
+                    FROM dbd_normal
+                    WHERE tanggal NOT LIKE '%2012-%' AND id_kecamatan = ". $kecamatan[$iteration]['id'] ."
+                ")->all();
+
+                $dbd2 = DbdNormal::findBySql("
+                    SELECT *
+                    FROM dbd_normal
+                    WHERE tanggal LIKE '%2012-%' AND id_kecamatan = ". $kecamatan[$iteration]['id'] ."
+                ")->all();
+
+                //Acak Solusi
+                if($metodeperhitungan == 'linear'){
+                    if($metodebilacak == 'biasa'){
+                        $solusi = acakSolusi(5);
+                    } else if($metodebilacak == 'ratanol'){
+                        $solusi = randomRatarataNol(5);
+                    } else {
+                        $solusi = randomDistribusiNormal(5);
+                    }
+                } else {
+                    if($metodebilacak == 'biasa'){
+                        $solusi = acakSolusi(8);
+                    } else if($metodebilacak == 'ratanol'){
+                        $solusi = randomRatarataNol(8);
+                    } else {
+                        $solusi = randomDistribusiNormal(8);
+                    }
+                }
+
+                if($metodeperhitungan == 'linear'){
+                    //Hitung Error        
+                    $hitung = hitungLinear($solusi, $dbd);
+                    $error_tiap_data = $hitung['error_tiap_data'];
+                    $error = average($error_tiap_data);
+
+                    //Prediksi
+                    $hitung2 = hitungLinear($solusi, $dbd2);
+                    $error_tiap_data2 = $hitung2['error_tiap_data'];
+                    $error2 = average($error_tiap_data2);
+                } else {
+                    //Hitung Error        
+                    $hitung = hitungKuadratik($solusi, $dbd);
+                    $error_tiap_data = $hitung['error_tiap_data'];
+                    $error = average($error_tiap_data);
+
+                    //Prediksi
+                    $hitung2 = hitungKuadratik($solusi, $dbd2);
+                    $error_tiap_data2 = $hitung2['error_tiap_data'];
+                    $error2 = average($error_tiap_data2);
+                }
+
+                //Penetapan Smin dan Emin
+                $solusi_min = $solusi;
+                $error_min = $error;
+
+                //Prediksi
+                $error_min2 = $error2;
+
+                //Inisialisasi K dan T
+                $K = $error_min * 10;
+                //$T = 0.8;
+                $T = 0.1; $T0 = 0.1; $Tn = 0.0001;
+
+                //Prediksi
+                $K2 = $error_min2 * 10;
+
+                //prediksi min
+                $prediksi_min = average($hitung['prediksi_tiap_data']);
+
+                //Prediksi
+                $prediksi_min2 = average($hitung2['prediksi_tiap_data']);
+
+                $max_iterasi = 500;
+                for ($iterasi = 0; $iterasi < $max_iterasi; $iterasi++){
+                    //Acak Solusi
+                    if($metodeperhitungan == 'linear'){
+                        if($metodebilacak == 'biasa'){
+                            $solusi = acakSolusi(5);
+                        } else if($metodebilacak == 'ratanol'){
+                            $solusi = randomRatarataNol(5);
+                        } else {
+                            $solusi = randomDistribusiNormal(5);
+                        }
+                    } else {
+                        if($metodebilacak == 'biasa'){
+                            $solusi = acakSolusi(8);
+                        } else if($metodebilacak == 'ratanol'){
+                            $solusi = randomRatarataNol(8);
+                        } else {
+                            $solusi = randomDistribusiNormal(8);
+                        }
+                    }
+
+                    if($metodeperhitungan == 'linear'){
+                        //Hitung Error
+                        $hitung = hitungLinear($solusi, $dbd);
+                        $error = average($hitung['error_tiap_data']);
+                        $prediksi = average($hitung['prediksi_tiap_data']);
+
+                        //Prediksi
+                        $hitung2 = hitungLinear($solusi, $dbd2);
+                        $error2 = average($hitung2['error_tiap_data']);
+                        $prediksi2 = average($hitung2['prediksi_tiap_data']);
+                    } else {
+                        //Hitung Error
+                        $hitung = hitungKuadratik($solusi, $dbd);
+                        $error = average($hitung['error_tiap_data']);
+                        $prediksi = average($hitung['prediksi_tiap_data']);
+
+                        //Prediksi
+                        $hitung2 = hitungKuadratik($solusi, $dbd2);
+                        $error2 = average($hitung2['error_tiap_data']);
+                        $prediksi2 = average($hitung2['prediksi_tiap_data']);
+                    }
+
+                    //Pengubahan Smin dan Emin
+                    $r = (float)rand()/(float)getrandmax();
+                    if($K == 0){
+                        $K = 1;
+                    }
+                    $exp = exp( -($error - $error_min)/($K * $T));
+
+                    //Prediksi
+                    if($K2 == 0){
+                        $K2 = 1;
+                    }
+                    $exp2 = exp( -($error2 - $error_min2)/($K2 * $T));
+
+                    if($r < $exp){ //Simulated Annealing
+                    // if($error_min > $error){ //Montecarlo
+                        $solusi_min = $solusi;
+                        $error_min = $error;
+                        $prediksi_min = $prediksi;
+
+                        $error_min2 = $error2;
+                        $prediksi_min2 = $prediksi2;
+                    }
+
+                    //Pengubahan Temperature
+                    $coolingRate = 0.2;
+                    // $T = $T * (1 - $coolingRate);
+                    $T = $T0 * pow($Tn/$T0, $iterasi/$max_iterasi);
+
+                    if(isset($prediksi_min2)){
+                        $return['prediksi_min'] = abs($prediksi_min2);
+                    } else{
+                        $return['prediksi_min'] = abs($prediksi2);
+                        var_dump($iterasi ." : ". $prediksi2); die();
+                    }
+                    $return['t_akhir'] = $T;
+                    if($iterasi%100 == 0){
+                        //ntar dibuka ya
+                        //$params['error_min'][] = abs(sum($hitung2['kasus']) - $params['prediksi_min']);
+                    }
+                }
+
+                $data = DbdFix::findBySql("
+                    SELECT df.kasus as 'kasus'
+                    FROM dbd_fix df
+                    WHERE df.tanggal LIKE '%2012-%' AND df.id_kecamatan = ".$kecamatan[$iteration]['id']."
+                    GROUP BY id_kecamatan
+                ")->asArray()->one();
+                $hitung2 = hitungLinear($solusi_min, $dbd2);
+
+                $prediksi2 = denormalisasi($hitung2['prediksi_tiap_data']);
+    //            $return[$iteration]['solusi'] = $solusi_min;
+                $avgprediksi = round(average($prediksi2));
+                $err = abs($data['kasus'] - $avgprediksi);
+                $return[$iteration]['table']['kecamatan'] = $kecamatan[$iteration]['nama_kecamatan'];
+                $return[$iteration]['table']['kasus'] = $data['kasus'];
+                $return[$iteration]['table']['prediksi'] = $avgprediksi;
+                $return[$iteration]['table']['error'] = $err;
+
+                $kml[$i]['table']['kecamatan'] = $kecamatan[$iteration]['nama_kecamatan'];
+                $kml[$i]['table']['kasus'] = $data['kasus'];
+                $kml[$i]['table']['prediksi'] = $avgprediksi;
+                $kml[$i]['table']['error'] = $err;
+                $i++;
+            }
+        }
+        
+        displayTabel($kml);
+//        Helper::vdump($kml);
+//        die("a");
+        
+        $time_end = microtime(true);
+        $time = $time_end - $time_start;
+        
+        createKMLKecamatan($return);
+        
+        return $return;
+    }
+    
+    public function actionHitungJember($metodeperhitungan, $metodebilacak) {
+        $return['kecamatan'] = 'jember';
+        $return['metodebilacak'] = $metodebilacak;
+        $return['metodeperhitungan'] = $metodeperhitungan;
 //        $tes = createKML();
         
         ini_set('max_execution_time', 30000);
@@ -230,7 +654,7 @@ class PrediksiKecamatanController extends Controller
         //menghitung rata2 Prediksi
         $prediksi_min2 = sum($hitung2['prediksi_tiap_data']) / sizeof($dbd2);
 
-        $max_iterasi = 200;
+        $max_iterasi = 10;
         for ($iterasi = 0; $iterasi < $max_iterasi; $iterasi++){
             //Acak Solusi
             if($metodebilacak == 'biasa'){
@@ -369,54 +793,118 @@ class PrediksiKecamatanController extends Controller
             $arr_prediksi_tiap_kecamatan[] = sum($hitung2['prediksi_tiap_data']) / sizeof($dbd2);
             $arr_error_tiap_kecamatan[] = abs(sum($hitung2['kasus']) - (sum($hitung2['prediksi_tiap_data']) / sizeof($dbd2)));
         }
-        Helper::vdump($solusi_min);
-        Helper::vdump($arr_kasus_tiap_kecamatan);
-        Helper::vdump($arr_prediksi_tiap_kecamatan);
-        Helper::vdump($arr_error_tiap_kecamatan);
+        
+        $return['solusi'] = $solusi_min;
+        
+        //denormalisasi hasil (pengembalian ke nilai fix nya)
+        //Helper::vdump($arr_prediksi_tiap_kecamatan);
+        $prediksi_tiap_kecamatan = denormalisasi($arr_prediksi_tiap_kecamatan);
+        //Helper::vdump($prediksi_tiap_kecamatan);
+        
+        //Pengisian parameter di VIEW nya
+        for($id_kecamatan = 1; $id_kecamatan <= sizeof($kecamatan); $id_kecamatan++){
+            $data = DbdFix::findBySql("
+                SELECT kec.nama_kecamatan as 'kecamatan',
+                    df.kasus as 'kasus'
+                FROM dbd_fix df
+                JOIN kecamatan kec ON df.id_kecamatan = kec.id
+                WHERE df.tanggal LIKE '%2012-01%' AND df.id_kecamatan = ".$id_kecamatan."
+                GROUP BY id_kecamatan
+            ")->asArray()->one();
+            $return['table'][$id_kecamatan - 1]['kecamatan'] = $data['kecamatan'];
+            $return['table'][$id_kecamatan - 1]['kasus'] = $data['kasus'];
+            $return['table'][$id_kecamatan - 1]['prediksi'] = $prediksi_tiap_kecamatan[$id_kecamatan - 1];
+            $return['table'][$id_kecamatan - 1]['error'] = abs($data['kasus'] - $prediksi_tiap_kecamatan[$id_kecamatan - 1]);
+        }
+        
+        createKMLJember($return['table']);
+        
+//        echo "Solusi :";
+//        Helper::vdump($solusi_min);
+//        
+//        echo "Kasus tiap kecamatan :";
+//        Helper::vdump($arr_kasus_tiap_kecamatan);
+//        
+//        echo "Prediksi tiap kecamatan :";
+//        Helper::vdump($arr_prediksi_tiap_kecamatan);
+//        
+//        echo "Error tiap kecamatan :";
+//        Helper::vdump($arr_error_tiap_kecamatan);
+//        
+//        echo "Params :";
+//        Helper::vdump($return);
         
         $time_end = microtime(true);
         $time = $time_end - $time_start;
-        echo $time . '<br>';
-        die("wes mandek");
+        //echo $time . '<br>';
         
         //return $this->render('hitung', ['params' => $params]);
-        return $params;
+        return $return;
     }
     
     public function actionGetPrediksi() {
-        $jenisperhitungan = $_GET['jenisperhitungan'];
+        $kecamatan = $_GET['kecamatan'];
         $metodeperhitungan = $_GET['metodeperhitungan'];
         $metodebilacak = $_GET['metodebilacak'];
+//        $bulan = $_GET['bulan'];
         
-        if($jenisperhitungan == 'kecamatan'){
-            $hitung = $this->actionHitungKecamatan($metodeperhitungan, $metodebilacak);
+        if($kecamatan == 'jember'){
+            $hitung = $this->actionHitungJember($metodebilacak, $metodeperhitungan);
             return $this->render('hitung', ['params' => $hitung]);
         } else {
-            $hitung = $this->actionHitungKecamatan($metodeperhitungan, $metodebilacak);
+            $hitung = $this->actionHitungKecamatan($metodebilacak, $metodeperhitungan);
             return $this->render('hitung', ['params' => $hitung]);
         }
     }
+    
+    public function actionDashboard(){
+        $kecamatan = Kecamatan::find()->asArray()->all();
+        
+        for($i=0; $i<sizeof($kecamatan); $i++){
+            $data = DbdFix::findBySql("
+                SELECT sum(df.kasus) as 'kasus'
+                FROM dbd_fix df
+                WHERE df.id_kecamatan = ".$kecamatan[$i]['id']."
+                GROUP BY id_kecamatan
+            ")->asArray()->one();
+            $hasil[]['kasus'] = $data['kasus'];
+        }
+        
+        createKMLKecamatan3($hasil);
+//        Helper::vdump($hasil);
+//        die("bnm,");
+    }
+}
+
+function acakSolusi ($banyak){
+    srand(mktime());
+    for ($i = 0; $i < $banyak; $i++) {
+        $random = ((float)rand()/(float)getrandmax() * 2) - 1;
+        $solusi[$i] = number_format($random, 3);
+    }
+    return $solusi;
 }
 
 function randomRatarataNol($banyak){
     srand(mktime());
     $average = 0;
     $solusi = [];
-    $skala = 1;
+    $skala = 0.5;
 
     $ulang = true;
 
     while($ulang){
         for ($i = 0; $i < $banyak; $i++) {
-            $random = ((float)rand()/(float)getrandmax() * ($skala * 2)) - $skala;
+            $random = ((float)rand()/(float)getrandmax() * ($skala * 3)) - $skala;
             $solusi[$i] = number_format($random, 3);
         }
         $average = average($solusi);
 
-        if($average < 0.3 && $average > -0.3){
+        if($average < 0.002 && $average > -0.002){
             $ulang = false;
         }
     }
+//    $solusi = [1,1,1,1,1,1,1,1,1,1,1,1];
 
     return $solusi;
 }
@@ -441,21 +929,10 @@ function randomDistribusiNormal($banyak){
 
         $bilAcak[$i] = number_format($b, 3);
     }
-    
     return $bilAcak;
 }
 
-function acakSolusi ($banyak){
-    srand(mktime());
-    for ($i = 0; $i < $banyak; $i++) {
-        $random = ((float)rand()/(float)getrandmax() * 20) - 10;
-        $solusi[$i] = number_format($random, 3);
-    }
-//    $solusi = [0,0,0,0,0];
-    return $solusi;
-}
-
-function hitungLinear($solusi, $dbd){    
+function hitungLinear($solusi, $dbd){
     $total_kasus = 0;
     $error = 0;
     $hitungError['grandtotal_prediksi'] = 0;
@@ -463,10 +940,13 @@ function hitungLinear($solusi, $dbd){
     
     foreach ($dbd as $k => $v) {
         $total_kasus += $dbd[$k]->kasus;
-        $prediksi = ($solusi[0] * $dbd[$k]->ch) + ($solusi[1] * $dbd[$k]->hh) + ($solusi[2] * $dbd[$k]->abj) + ($solusi[3] * $dbd[$k]->hi) + ($solusi[4]);
+        $prediksi = ($solusi[0] * $dbd[$k]->ch) + ($solusi[1] * $dbd[$k]->hh) + ($solusi[2] * $dbd[$k]->abj) + ($solusi[3] * $dbd[$k]->hi);
+//        echo $prediksi;
+//        die("aaa");
         
         $pre[] = $prediksi;
-        $error = abs($dbd[$k]->kasus - $prediksi);
+        //$error = abs($dbd[$k]->kasus - $prediksi);
+        $error = pow($prediksi - $dbd[$k]->kasus, 2);
         $error_prediksi[] = $error;
         
         $hitungError['ch'][] = $dbd[$k]->ch;
@@ -541,7 +1021,41 @@ function sum($data){
     return $sum;
 }
 
-function createKML(){
+function denormalisasi($data){
+    $dbdfix = DbdFix::findBySql("
+        SELECT max(kasus) as max, min(kasus) as min
+        FROM dbd_fix
+    ")->asArray()->one();
+    
+    //data = newdata / ((newmax-newmin)/(max-min)+newmin) - min
+    $newmax = 1;
+    $newmin = 0;
+    
+    $max = $dbdfix['max'];
+    $min = $dbdfix['min'];
+    
+    foreach ($data as $key => $value) {
+        $hasil = round(number_format(($value / (($newmax - $newmin) / ($max - $min) + $newmin) - $min), 2));
+        if($hasil <= 0){
+            $return[] = 0;
+        } else {
+            $return[] = $hasil;
+        }
+    }
+    return $return;
+}
+
+function createKMLKecamatan($data){
+    for($i=0; $i < sizeof($data)-5; $i++){
+        if($data[$i]['table']['prediksi'] <= 3){
+            $style[] = 'rendah';
+        } else if($data[$i]['table']['prediksi'] > 3 && $data[$i]['table']['prediksi'] <= 8){
+            $style[] = 'sedang';
+        } else{
+            $style[] = 'tinggi';
+        }
+    }
+    
     $kml = '<?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://code.google.com/apis/kml/schema/kml22gx.xsd">
@@ -555,16 +1069,17 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 ';
     
     $kecamatan = Kecamatan::find()->asArray()->all();
+    
     foreach ($kecamatan as $k => $v){
         $kml .= '<Placemark>
 <name>'. $v['nama_kecamatan'] .'</name>
-<description>'.$v['nama_kecamatan'].'</description>
+<description>Prediksi '.$data[$k]['table']['prediksi'].'</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#Line_Shape_ff0000_03</styleUrl>
+<styleUrl>#PolyStyle'.$style[$k].'</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -591,21 +1106,6 @@ $v['koordinat']
     
     $kml .= '</Folder>
         
-<Style id="PolyStylesedang">
-<LabelStyle>
-<color>00000000</color>
-<scale>0.000000</scale>
-</LabelStyle>
-<LineStyle>
-<color>ff666666</color>
-<width>0.750000</width>
-</LineStyle>
-<PolyStyle>
-<color>ff9dc6fe</color>
-<outline>1</outline>
-</PolyStyle>
-</Style>
-
 <Style id="PolyStylerendah">
 <LabelStyle>
 <color>00000000</color>
@@ -616,7 +1116,22 @@ $v['koordinat']
 <width>0.750000</width>
 </LineStyle>
 <PolyStyle>
-<color>ffe4f1fd</color>
+<color>7800ff00</color>
+<outline>1</outline>
+</PolyStyle>
+</Style>
+
+<Style id="PolyStylesedang">
+<LabelStyle>
+<color>00000000</color>
+<scale>0.000000</scale>
+</LabelStyle>
+<LineStyle>
+<color>ff666666</color>
+<width>0.750000</width>
+</LineStyle>
+<PolyStyle>
+<color>7800ffff</color>
 <outline>1</outline>
 </PolyStyle>
 </Style>
@@ -631,7 +1146,7 @@ $v['koordinat']
 <width>0.750000</width>
 </LineStyle>
 <PolyStyle>
-<color>ff7991c5</color>
+<color>780000ff</color>
 <outline>1</outline>
 </PolyStyle>
 </Style>
@@ -640,5 +1155,393 @@ $v['koordinat']
 </kml>';
     
     file_put_contents("../kml/test.kml",$kml);
-    die();
+}
+
+//create kml berdasarkan data asli
+function createKMLKecamatan2($data){
+//    Helper::vdump($data);
+//    die("aaa");
+    for($i=0; $i < sizeof($data); $i++){
+        if($data[$i]['table']['kasus'] <= 3){
+            $style[] = 'rendah';
+        } else if($data[$i]['table']['kasus'] > 3 && $data[$i]['table']['kasus'] <= 8){
+            $style[] = 'sedang';
+        } else{
+            $style[] = 'tinggi';
+        }
+    }
+    
+//    Helper::vdump($style);
+//    die("aaa");
+    
+    $kml = '<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://code.google.com/apis/kml/schema/kml22gx.xsd">
+<Document id="INDONESIA_KEC">
+<name>INDONESIA_KEC</name>
+<Snippet></Snippet>
+<Folder id="FeatureLayer0">
+<name>INDONESIA_KEC</name>
+<Snippet></Snippet>
+
+';
+    
+    $kecamatan = Kecamatan::find()->asArray()->all();
+    
+    foreach ($kecamatan as $k => $v){
+        $kml .= '<Placemark>
+<name>'. $v['nama_kecamatan'] .'</name>
+<description>Kasus '.$data[$k]['table']['kasus'].'</description>
+<LookAt>
+<longitude>113.62262706</longitude>
+<latitude>-8.07996199</latitude>
+<range>27845</range>
+</LookAt>
+<styleUrl>#PolyStyle'.$style[$k].'</styleUrl>
+<Polygon>
+<outerBoundaryIs>
+<LinearRing>
+<coordinates>'.
+$v['koordinat']
+.'</coordinates>
+</LinearRing>
+';
+        if($v['nama_kecamatan'] == 'Gumuk Mas'){
+            $kml .= '</innerBoundaryIs>
+</Polygon>
+</Placemark>
+
+';
+        } else {
+            $kml .= '</outerBoundaryIs>
+</Polygon>
+</Placemark>
+
+';
+        }
+        
+    }
+    
+    $kml .= '</Folder>
+        
+<Style id="PolyStylerendah">
+<LabelStyle>
+<color>00000000</color>
+<scale>0.000000</scale>
+</LabelStyle>
+<LineStyle>
+<color>ff666666</color>
+<width>0.750000</width>
+</LineStyle>
+<PolyStyle>
+<color>7800ff00</color>
+<outline>1</outline>
+</PolyStyle>
+</Style>
+
+<Style id="PolyStylesedang">
+<LabelStyle>
+<color>00000000</color>
+<scale>0.000000</scale>
+</LabelStyle>
+<LineStyle>
+<color>ff666666</color>
+<width>0.750000</width>
+</LineStyle>
+<PolyStyle>
+<color>7800ffff</color>
+<outline>1</outline>
+</PolyStyle>
+</Style>
+
+<Style id="PolyStyletinggi">
+<LabelStyle>
+<color>00000000</color>
+<scale>0.000000</scale>
+</LabelStyle>
+<LineStyle>
+<color>ff666666</color>
+<width>0.750000</width>
+</LineStyle>
+<PolyStyle>
+<color>780000ff</color>
+<outline>1</outline>
+</PolyStyle>
+</Style>
+
+</Document>
+</kml>';
+    
+    file_put_contents("../kml/kecamatan.kml",$kml);
+}
+
+//create kml cuma buat dashboard
+function createKMLKecamatan3($data){
+    
+    for($i=0; $i < sizeof($data); $i++){
+        if($data[$i]['kasus'] <= 50){
+            $style[] = 'rendah';
+        } else if($data[$i]['kasus'] > 50 && $data[$i]['kasus'] <= 100){
+            $style[] = 'sedang';
+        } else{
+            $style[] = 'tinggi';
+        }
+    }
+    
+    $kml = '<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://code.google.com/apis/kml/schema/kml22gx.xsd">
+<Document id="INDONESIA_KEC">
+<name>INDONESIA_KEC</name>
+<Snippet></Snippet>
+<Folder id="FeatureLayer0">
+<name>INDONESIA_KEC</name>
+<Snippet></Snippet>
+
+';
+    
+    $kecamatan = Kecamatan::find()->asArray()->all();
+    
+    foreach ($kecamatan as $k => $v){
+        $kml .= '<Placemark>
+<name>'. $v['nama_kecamatan'] .'</name>
+<description>Total kasus '.$data[$k]['kasus'].'</description>
+<LookAt>
+<longitude>113.62262706</longitude>
+<latitude>-8.07996199</latitude>
+<range>27845</range>
+</LookAt>
+<styleUrl>#PolyStyle'.$style[$k].'</styleUrl>
+<Polygon>
+<outerBoundaryIs>
+<LinearRing>
+<coordinates>'.
+$v['koordinat']
+.'</coordinates>
+</LinearRing>
+';
+        if($v['nama_kecamatan'] == 'Gumuk Mas'){
+            $kml .= '</innerBoundaryIs>
+</Polygon>
+</Placemark>
+
+';
+        } else {
+            $kml .= '</outerBoundaryIs>
+</Polygon>
+</Placemark>
+
+';
+        }
+        
+    }
+    
+    $kml .= '</Folder>
+        
+<Style id="PolyStylerendah">
+<LabelStyle>
+<color>00000000</color>
+<scale>0.000000</scale>
+</LabelStyle>
+<LineStyle>
+<color>ff666666</color>
+<width>0.750000</width>
+</LineStyle>
+<PolyStyle>
+<color>7800ff00</color>
+<outline>1</outline>
+</PolyStyle>
+</Style>
+
+<Style id="PolyStylesedang">
+<LabelStyle>
+<color>00000000</color>
+<scale>0.000000</scale>
+</LabelStyle>
+<LineStyle>
+<color>ff666666</color>
+<width>0.750000</width>
+</LineStyle>
+<PolyStyle>
+<color>7800ffff</color>
+<outline>1</outline>
+</PolyStyle>
+</Style>
+
+<Style id="PolyStyletinggi">
+<LabelStyle>
+<color>00000000</color>
+<scale>0.000000</scale>
+</LabelStyle>
+<LineStyle>
+<color>ff666666</color>
+<width>0.750000</width>
+</LineStyle>
+<PolyStyle>
+<color>780000ff</color>
+<outline>1</outline>
+</PolyStyle>
+</Style>
+
+</Document>
+</kml>';
+    
+    file_put_contents("../kml/dashboard.kml",$kml);
+}
+
+function createKMLJember($data){
+//    Helper::vdump($data);
+//    die("bhjnkm;");
+    for($i=0; $i < sizeof($data); $i++){
+        if($data[$i]['prediksi'] <= 10){
+            $style[] = 'rendah';
+        } else if($data[$i]['prediksi'] > 10 && $data[$i]['prediksi'] <= 20){
+            $style[] = 'sedang';
+        } else{
+            $style[] = 'tinggi';
+        }
+    }
+    
+    $kml = '<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/kml/2.2.0/ogckml22.xsd http://www.google.com/kml/ext/2.2 http://code.google.com/apis/kml/schema/kml22gx.xsd">
+<Document id="INDONESIA_KEC">
+<name>INDONESIA_KEC</name>
+<Snippet></Snippet>
+<Folder id="FeatureLayer0">
+<name>INDONESIA_KEC</name>
+<Snippet></Snippet>
+
+';
+    
+    $kecamatan = Kecamatan::find()->asArray()->all();
+    
+    foreach ($kecamatan as $k => $v){
+        $kml .= '<Placemark>
+<name>'. $v['nama_kecamatan'] .'</name>
+<description>'.$v['nama_kecamatan'].'</description>
+<LookAt>
+<longitude>113.62262706</longitude>
+<latitude>-8.07996199</latitude>
+<range>27845</range>
+</LookAt>
+<styleUrl>#PolyStyle'.$style[$k].'</styleUrl>
+<Polygon>
+<outerBoundaryIs>
+<LinearRing>
+<coordinates>'.
+$v['koordinat']
+.'</coordinates>
+</LinearRing>
+';
+        if($v['nama_kecamatan'] == 'Gumuk Mas'){
+            $kml .= '</innerBoundaryIs>
+</Polygon>
+</Placemark>
+
+';
+        } else {
+            $kml .= '</outerBoundaryIs>
+</Polygon>
+</Placemark>
+
+';
+        }
+        
+    }
+    
+    $kml .= '</Folder>
+        
+<Style id="PolyStylerendah">
+<LabelStyle>
+<color>00000000</color>
+<scale>0.000000</scale>
+</LabelStyle>
+<LineStyle>
+<color>ff666666</color>
+<width>0.750000</width>
+</LineStyle>
+<PolyStyle>
+<color>7800ff00</color>
+<outline>1</outline>
+</PolyStyle>
+</Style>
+
+<Style id="PolyStylesedang">
+<LabelStyle>
+<color>00000000</color>
+<scale>0.000000</scale>
+</LabelStyle>
+<LineStyle>
+<color>ff666666</color>
+<width>0.750000</width>
+</LineStyle>
+<PolyStyle>
+<color>7800ffff</color>
+<outline>1</outline>
+</PolyStyle>
+</Style>
+
+<Style id="PolyStyletinggi">
+<LabelStyle>
+<color>00000000</color>
+<scale>0.000000</scale>
+</LabelStyle>
+<LineStyle>
+<color>ff666666</color>
+<width>0.750000</width>
+</LineStyle>
+<PolyStyle>
+<color>780000ff</color>
+<outline>1</outline>
+</PolyStyle>
+</Style>
+
+</Document>
+</kml>';
+    
+    file_put_contents("../kml/test.kml",$kml);
+}
+
+function displayTabel($data){
+    Helper::vdump($data);
+    
+    $i=1;
+    echo "<table border=1>";
+        echo "<tr>";
+            echo "<td>Kecamatan</td>";
+            echo "<td>Kasus</td>";
+            echo "<td>1</td>";
+            echo "<td>2</td>";
+            echo "<td>3</td>";
+            echo "<td>4</td>";
+            echo "<td>5</td>";
+            echo "<td>6</td>";
+            echo "<td>7</td>";
+            echo "<td>8</td>";
+            echo "<td>9</td>";
+            echo "<td>10</td>";
+        echo "</tr>";
+        
+        while($i<=310){
+        echo "<tr>";
+            echo "<td>".$data[$i]['table']['kecamatan']."</td>";
+            echo "<td>".$data[$i]['table']['kasus']."</td>";
+            echo "<td>".$data[$i]['table']['prediksi']."</td>";
+            echo "<td>".$data[$i+1]['table']['prediksi']."</td>";
+            echo "<td>".$data[$i+2]['table']['prediksi']."</td>";
+            echo "<td>".$data[$i+3]['table']['prediksi']."</td>";
+            echo "<td>".$data[$i+4]['table']['prediksi']."</td>";
+            echo "<td>".$data[$i+5]['table']['prediksi']."</td>";
+            echo "<td>".$data[$i+6]['table']['prediksi']."</td>";
+            echo "<td>".$data[$i+7]['table']['prediksi']."</td>";
+            echo "<td>".$data[$i+8]['table']['prediksi']."</td>";
+            echo "<td>".$data[$i+9]['table']['prediksi']."</td>";
+        echo "</tr>";
+        
+        $i = $i+10;;
+        }
+    echo "</table>";
+    
+    die("display");
 }

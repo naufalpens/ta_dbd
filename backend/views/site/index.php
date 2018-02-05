@@ -1,53 +1,105 @@
 <?php
-
 /* @var $this yii\web\View */
 
 $this->title = 'My Yii Application';
 ?>
 <div class="site-index">
-
-    <div class="jumbotron">
-        <h1>Congratulations!</h1>
-
-        <p class="lead">You have successfully created your Yii-powered application.</p>
-
-        <p><a class="btn btn-lg btn-success" href="http://www.yiiframework.com">Get started with Yii</a></p>
-    </div>
-
     <div class="body-content">
+        <div class="row">
+            <div class="col-md-12">
+                <h3>Total Kasus Demam Berdarah Tahun 2009-2012</h3>
+            </div>
+            
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-red"><i class="ion ion-person"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Jumlah Kasus</span>
+                        <span class="info-box-text">Tahun 2009</span>
+                        <span class="info-box-number">1093<small> Kasus</small></span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-red"><i class="ion ion-person"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Jumlah Kasus</span>
+                        <span class="info-box-text">Tahun 2010</span>
+                        <span class="info-box-number">1494<small> Kasus</small></span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-green"><i class="ion ion-person"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Jumlah Kasus</span>
+                        <span class="info-box-text">Tahun 2011</span>
+                        <span class="info-box-number">77<small> Kasus</small></span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="info-box">
+                    <span class="info-box-icon bg-yellow"><i class="ion ion-person"></i></span>
+
+                    <div class="info-box-content">
+                        <span class="info-box-text">Jumlah Kasus</span>
+                        <span class="info-box-text">Tahun 2012</span>
+                        <span class="info-box-number">260<small> Kasus</small></span>
+                    </div>
+                    <!-- /.info-box-content -->
+                </div>
+                <!-- /.info-box -->
+            </div>
+        </div>
 
         <div class="row">
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/doc/">Yii Documentation &raquo;</a></p>
+            <div class="col-md-12">
+                <h3>Peta Persebaran Penyakit Demam Berdarah 2009-2012</h3>
+                <div id="map"></div>
             </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/forum/">Yii Forum &raquo;</a></p>
-            </div>
-            <div class="col-lg-4">
-                <h2>Heading</h2>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
-                    dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-                    ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-                    fugiat nulla pariatur.</p>
-
-                <p><a class="btn btn-default" href="http://www.yiiframework.com/extensions/">Yii Extensions &raquo;</a></p>
-            </div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <p><i>*Keterangan</i></p>
+            <span class="label label-success">Aman</span>
+            <span class="label label-warning">Siaga</span>
+            <span class="label label-danger">Bahaya</span>
         </div>
 
     </div>
 </div>
+
+<script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyBCowEtFYcc6rnuHniA4_t883RgxdRBm-I"></script>
+<script type="text/javascript" src="../../backend/web/asset/geoxml3/polys/geoxml3.js"></script>
+
+<script>
+    
+    
+        // create the maps
+        var myOptions = {
+            zoom: 9,
+            center: new google.maps.LatLng(-8.17546958726021, 113.7026596069336),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        }
+
+        peta = new google.maps.Map(document.getElementById("map"), myOptions);
+            var geoXml = new geoXML3.parser({map: peta});
+            var path = "../../backend/kml/dashboard.kml";
+            geoXml.parse(path);
+    
+</script>

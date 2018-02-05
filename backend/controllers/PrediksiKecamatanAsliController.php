@@ -17,7 +17,7 @@ use backend\components\Helper;
 /**
  * PrediksiKecamatanController implements the CRUD actions for PrediksiKecamatan model.
  */
-class PrediksiKecamatanController extends Controller
+class PrediksiKecamatanAsliController extends Controller
 {
     /**
      * @inheritdoc
@@ -259,6 +259,9 @@ class PrediksiKecamatanController extends Controller
         $params['table']['rata_prediksi'] = $hitung2['rata_prediksi'];
         $params['grandtotal_prediksi'] = $hitung2['grandtotal_prediksi'];
         $params['grandtotal_error'] = $hitung2['grandtotal_prediksi'];
+        
+        Helper::vdump($params);
+        die("=======");
         
         $time_end = microtime(true);
         $time = $time_end - $time_start;

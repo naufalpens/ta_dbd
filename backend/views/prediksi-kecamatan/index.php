@@ -9,6 +9,8 @@ use yii\grid\GridView;
 
 $this->title = 'Prediksi Demam Berdarah';
 $this->params['breadcrumbs'][] = $this->title;
+
+$baseUrl = Yii::$app->urlManager->createAbsoluteUrl(['/']);
 ?>
 <div class="prediksi-kecamatan-index">
 
@@ -16,14 +18,15 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
 
-    <form method="GET" action="prediksi-kecamatan/get-prediksi">
+    <!--<form method="GET" action="prediksi-kecamatan/get-prediksi">-->
+    <form method="GET" action="<?php echo $baseUrl.'prediksi-kecamatan/get-prediksi'; ?>">
         <div class="row col-md-12">
 
             <div class="form-group col-md-4">
-                <label>Pilih Jenis Perhitungan</label>
-                <select class="form-control" name="jenisperhitungan">
-                    <option value="kecamatan">Tiap Kecamatan</option>
-                    <option value="jember">Seluruh Jember</option>
+                <label>Pilih Kecamatan</label>
+                <select class="form-control" name="kecamatan">
+                    <option id="kecamatan" value="kecamatan">Tiap Kecamatan</option>
+                    <option id="jember" value="jember">Seluruh Jember</option>
                 </select>
             </div>
             
@@ -43,6 +46,15 @@ $this->params['breadcrumbs'][] = $this->title;
                     <option value="distribusi">Bilangan Acak Distribusi Normal</option>
                 </select>
             </div>
+            
+<!--            <div class="form-group col-md-3">
+                <label>Pilih Bulan</label>
+                <select class="form-control" name="bulan">
+                    <option value="01">Januari</option>
+                    <option value="02">Februari</option>
+                    <option value="03">Maret</option>
+                </select>
+            </div>-->
 
             <div class="form-group col-md-6">
                 <input type="submit" class="btn btn-primary" value="Hitung Prediksi">

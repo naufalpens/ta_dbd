@@ -4,29 +4,26 @@ use yii\helpers\Html;
 use yii\grid\GridView;
 
 /* @var $this yii\web\View */
-/* @var $searchModel backend\models\DbdFixSearch */
+/* @var $searchModel backend\models\NewDbdSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Data Demam Berdarah Tahun 2009 - 2012';
+$this->title = 'Data Awal';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="dbd-fix-index">
+<div class="new-dbd-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-<!--    <p>
-        <?= Html::a('Create Dbd Fix', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>-->
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        //'filterModel' => $searchModel,
+//        'filterModel' => $searchModel,
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
 
             //'id',
-            'idKecamatan.nama_kecamatan',
             'tanggal',
+            'kecamatan',
             'ch',
             'hh',
             'abj',

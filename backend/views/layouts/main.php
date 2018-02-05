@@ -27,7 +27,7 @@ $baseUrl = Yii::$app->getUrlManager()->getBaseUrl()."/";
         <?php $this->head() ?>
     </head>    
     <style>
-        #map {            
+        #map, #map2 {            
             height: 400px;
             width: 100%;
         }        
@@ -44,7 +44,7 @@ $baseUrl = Yii::$app->getUrlManager()->getBaseUrl()."/";
                     <!-- mini logo for sidebar mini 50x50 pixels -->
                     <span class="logo-mini"><b>A</b>LT</span>
                     <!-- logo for regular state and mobile devices -->
-                    <span class="logo-lg"><b>Admin</b>LTE</span>
+                    <span class="logo-lg"><b>Prediksi</b> DB</span>
                 </a>
                 <!-- Header Navbar: style can be found in header.less -->
                 <nav class="navbar navbar-static-top">
@@ -56,9 +56,9 @@ $baseUrl = Yii::$app->getUrlManager()->getBaseUrl()."/";
                     <div class="navbar-custom-menu">
                         <ul class="nav navbar-nav">          
                             <!-- User Account: style can be found in dropdown.less -->
-                            <li class="dropdown user user-menu">
+<!--                            <li class="dropdown user user-menu">
                                 <a href="<?= 'index.php?r=site%2Flogout' ?>" class="hidden-xs">Logout</a>
-                            </li>
+                            </li>-->
                         </ul>
                     </div>
                 </nav>
@@ -73,7 +73,8 @@ $baseUrl = Yii::$app->getUrlManager()->getBaseUrl()."/";
                             <img src="<?php echo Yii::getAlias('@web') . "/asset/dist/img/user8-128x128.jpg" ?>" class="img-circle" alt="User Image">
                         </div>
                         <div class="pull-left info">
-                            <p>Admin</p>
+                            <p>Naufal</p>
+                            <a href="#"><i class="fa fa-circle text-success"></i> Admin</a>
                         </div>
                     </div>
 
@@ -94,9 +95,10 @@ $baseUrl = Yii::$app->getUrlManager()->getBaseUrl()."/";
                                     <i class="fa fa-angle-left pull-right"></i>
                                 </span>
                             </a>
-                            <ul class="treeview-menu">                                
-                                <li><a href="<?= $baseUrl ?>dbd-fix"><i class="fa fa-circle-o"></i> Data Asli</a></li>                                
-                                <li><a href="<?= $baseUrl ?>dbd-normal"><i class="fa fa-circle-o"></i> Data Normalisasi</a></li>                                
+                            <ul class="treeview-menu">
+                                <li><a href="<?= $baseUrl ?>new-dbd"><i class="fa fa-circle-o"></i> Data Awal</a></li>
+                                <li><a href="<?= $baseUrl ?>dbd-fix"><i class="fa fa-circle-o"></i> Data Lengkap</a></li>
+                                <li><a href="<?= $baseUrl ?>dbd-normal"><i class="fa fa-circle-o"></i> Data Normalisasi</a></li>
                             </ul>
                         </li>
 
