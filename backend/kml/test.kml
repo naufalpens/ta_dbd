@@ -10,13 +10,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Ajung</name>
-<description>Prediksi 0</description>
+<description>Prediksi 8</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylerendah</styleUrl>
+<styleUrl>#PolyStylesedang</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -28,13 +28,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Ambulu</name>
-<description>Prediksi 12</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStyletinggi</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -46,13 +46,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Arjasa</name>
-<description>Prediksi 12</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStyletinggi</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -64,13 +64,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Balung</name>
-<description>Prediksi 12</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStyletinggi</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -82,13 +82,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Bangsalsari</name>
-<description>Prediksi 2</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylerendah</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -100,13 +100,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Gumuk Mas</name>
-<description>Prediksi 1</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylerendah</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -123,13 +123,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Jelbuk</name>
-<description>Prediksi 3</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylerendah</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -141,13 +141,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Jenggawah</name>
-<description>Prediksi 1</description>
+<description>Prediksi 21</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylerendah</styleUrl>
+<styleUrl>#PolyStyletinggi</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -159,13 +159,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Jombang</name>
-<description>Prediksi 1</description>
+<description>Prediksi 14</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylerendah</styleUrl>
+<styleUrl>#PolyStyletinggi</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -177,13 +177,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Kalisat</name>
-<description>Prediksi 2</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylerendah</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -201,7 +201,7 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylerendah</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -219,7 +219,7 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylerendah</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -231,13 +231,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Ledokombo</name>
-<description>Prediksi 1</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylerendah</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -249,13 +249,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Mayang</name>
-<description>Prediksi 1</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylerendah</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -267,13 +267,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Mumbulsari</name>
-<description>Prediksi 1</description>
+<description>Prediksi 41</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylerendah</styleUrl>
+<styleUrl>#PolyStyletinggi</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -285,13 +285,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Pakusari</name>
-<description>Prediksi 12</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStyletinggi</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -303,13 +303,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Panti</name>
-<description>Prediksi 10</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStyletinggi</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -321,13 +321,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Patrang</name>
-<description>Prediksi 9</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStyletinggi</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -339,13 +339,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Puger</name>
-<description>Prediksi 7</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylesedang</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -357,7 +357,7 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Rambipuji</name>
-<description>Prediksi 9</description>
+<description>Prediksi 40</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
@@ -375,13 +375,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Semboro</name>
-<description>Prediksi 1</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylerendah</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -393,13 +393,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Silo</name>
-<description>Prediksi 1</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylerendah</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -411,13 +411,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Sukorambi</name>
-<description>Prediksi 1</description>
+<description>Prediksi 81</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylerendah</styleUrl>
+<styleUrl>#PolyStyletinggi</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -429,13 +429,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Sukowono</name>
-<description>Prediksi 1</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylerendah</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -447,13 +447,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Sumber Baru</name>
-<description>Prediksi 2</description>
+<description>Prediksi 7</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStylerendah</styleUrl>
+<styleUrl>#PolyStylesedang</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -465,13 +465,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Sumberjambe</name>
-<description>Prediksi 34</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStyletinggi</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -483,13 +483,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Sumbersari</name>
-<description>Prediksi 26</description>
+<description>Prediksi 3</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStyletinggi</styleUrl>
+<styleUrl>#PolyStylerendah</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -501,13 +501,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Tanggul</name>
-<description>Prediksi 27</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStyletinggi</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -519,13 +519,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Tempurejo</name>
-<description>Prediksi 28</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStyletinggi</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -537,13 +537,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Umbulsari</name>
-<description>Prediksi 19</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStyletinggi</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -555,13 +555,13 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 
 <Placemark>
 <name>Wuluhan</name>
-<description>Prediksi 24</description>
+<description>Prediksi 0</description>
 <LookAt>
 <longitude>113.62262706</longitude>
 <latitude>-8.07996199</latitude>
 <range>27845</range>
 </LookAt>
-<styleUrl>#PolyStyletinggi</styleUrl>
+<styleUrl>#PolyStylenol</styleUrl>
 <Polygon>
 <outerBoundaryIs>
 <LinearRing>
@@ -572,7 +572,22 @@ xsi:schemaLocation="http://www.opengis.net/kml/2.2 http://schemas.opengis.net/km
 </Placemark>
 
 </Folder>
-        
+
+<Style id="PolyStylenol">
+<LabelStyle>
+<color>00000000</color>
+<scale>0.000000</scale>
+</LabelStyle>
+<LineStyle>
+<color>ff666666</color>
+<width>0.750000</width>
+</LineStyle>
+<PolyStyle>
+<color>78ffffff</color>
+<outline>1</outline>
+</PolyStyle>
+</Style>
+
 <Style id="PolyStylerendah">
 <LabelStyle>
 <color>00000000</color>

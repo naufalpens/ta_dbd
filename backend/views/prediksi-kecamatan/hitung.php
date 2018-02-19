@@ -17,12 +17,13 @@ $baseUrl = Yii::$app->urlManager->createAbsoluteUrl(['/']);
     <p id="kecamatan" class="hidden"><?php echo $params['kecamatan'] ?></p>
     <p id="bilacak" class="hidden"><?php echo $params['metodebilacak'] ?></p>
     <p id="perhitungan" class="hidden"><?php echo $params['metodeperhitungan'] ?></p>
+    <p id="bulan" class="hidden"><?php echo $params['bulan'] ?></p>
 
     <h1><?= Html::encode($this->title) ?></h1>
     
     <form method="GET" action="<?php echo $baseUrl.'prediksi-kecamatan/get-prediksi'; ?>">
         <div class="row">
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
                 <label>Pilih Kecamatan</label>
                 <select class="form-control" name="kecamatan">
                     <option id="kecamatan" value="kecamatan">Tiap Kecamatan</option>
@@ -30,7 +31,7 @@ $baseUrl = Yii::$app->urlManager->createAbsoluteUrl(['/']);
                 </select>
             </div>
             
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
                 <label>Pilih Metode Perhitungan</label>
                 <select class="form-control" name="metodeperhitungan">
                     <option id="linear" value="linear">Linear</option>
@@ -38,23 +39,32 @@ $baseUrl = Yii::$app->urlManager->createAbsoluteUrl(['/']);
                 </select>
             </div>
 
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-3">
                 <label>Pilih Metode Bilangan Acak</label>
                 <select class="form-control" name="metodebilacak">
                     <option id="biasa" value="biasa">Bilangan Acak Biasa</option>
                     <option id="ratanol" value="ratanol">Bilangan Acak Rata-rata 0</option>
-                    <option id="distribusi" value="distribusi">Bilangan Acak Distribusi Normal</option>
+                    <!--<option id="distribusi" value="distribusi">Bilangan Acak Distribusi Normal</option>-->
                 </select>
             </div>
             
-<!--            <div class="form-group col-md-3">
+            <div class="form-group col-md-3">
                 <label>Pilih Bulan</label>
                 <select class="form-control" name="bulan">
-                    <option value="01">Januari</option>
-                    <option value="02">Februari</option>
-                    <option value="03">Maret</option>
+                    <option id="1" value="1">Januari</option>
+                    <option id="2" value="2">Februari</option>
+                    <option id="3" value="3">Maret</option>
+                    <option id="4" value="4">April</option>
+                    <option id="5" value="5">Mei</option>
+                    <option id="6" value="6">Juni</option>
+                    <option id="7" value="7">Juli</option>
+                    <option id="8" value="8">Agustus</option>
+                    <option id="9" value="9">September</option>
+                    <option id="10" value="10">Oktober</option>
+                    <option id="11" value="11">November</option>
+                    <option id="12" value="12">Desember</option>
                 </select>
-            </div>-->
+            </div>
 
             <div class="form-group col-md-4">
                 <input type="submit" class="btn btn-primary" value="Hitung Prediksi">
@@ -119,7 +129,7 @@ $baseUrl = Yii::$app->urlManager->createAbsoluteUrl(['/']);
                     </thead>
                     <tbody>
                         <?php
-                        for ($i=0; $i < sizeof($params)-5; $i++) {
+                        for ($i=0; $i < sizeof($params)-6; $i++) {
                         echo "<tr>";
                         echo "<td style='text-align: center;'>" . ($i+1) . "</td>";
                         echo "<td style='text-align: center;'>" . $params[$i]['table']['kecamatan'] . "</td>";
@@ -157,8 +167,9 @@ $baseUrl = Yii::$app->urlManager->createAbsoluteUrl(['/']);
     
     
     <div style="margin-top: 20px;">
-        <p><i>*Keterangan</i></p>
-        <span class="label label-success">Aman</span>
+        <p><i>*Keterangan</i></p>        
+        <span class="label label-default" style="background-color: #fbfbfb">Aman</span>
+        <span class="label label-success">Waspada</span>
         <span class="label label-warning">Siaga</span>
         <span class="label label-danger">Bahaya</span>
     </div>
@@ -188,7 +199,18 @@ $baseUrl = Yii::$app->urlManager->createAbsoluteUrl(['/']);
                 mapTypeId: google.maps.MapTypeId.ROADMAP
             }
             
+            var infowindow = new google.maps.InfoWindow();
+            
             peta = new google.maps.Map(document.getElementById("map"), myOptions);
+            var latlng2 = new google.maps.LatLng(10,10);
+            var marker2 = new google.maps.Marker({position:latlng2, map:map});
+            google.maps.event.addListener(marker2, 'click',
+                function(){
+                    infowindow.close();//hide the infowindow
+                    infowindow.setContent('Marker #2');//update the content for this marker
+                    infowindow.open(peta, marker2);//"move" the info window to the clicked marker and open it
+                }
+            );
             var geoXml = new geoXML3.parser({map: peta});
             var path = "../../kml/test.kml";
             geoXml.parse(path);
@@ -209,6 +231,9 @@ $baseUrl = Yii::$app->urlManager->createAbsoluteUrl(['/']);
         
         var metodeperhitungan = '#' + $('#perhitungan').text();
         $(metodeperhitungan).attr('selected','selected');
+        
+        var bulan = '#' + $('#bulan').text();        
+        $(bulan).attr('selected','selected');
             
 
         
